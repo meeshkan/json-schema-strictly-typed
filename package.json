@@ -1,6 +1,6 @@
 {
   "name": "json-schema-strictly-typed",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^24.0.18",
