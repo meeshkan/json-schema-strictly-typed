@@ -7,19 +7,7 @@
 
 Typescript is a useful way to verify the types of JavaScript objects.
 
-`json-schema-strictly-typed` implements a strict flavor of the JSON Schema 6 specification for typing. By strict, we mean prohibiting certain ambiguous or problematic types in the Schema.
-
-```json
-{
-    type: "integer",
-    minimum: 0
-    exclusiveMinimum: 5
-}
-```
-
-This makes no sense, as you cannot have a number whose minimum bound is simultaneously 0 (minimum) and 6 (the exclusive minimum of five).
-
-`json-schema-strictly-typed` aims to eliminate these types of nonsense values.
+`json-schema-strictly-typed` implements a strict flavor of the JSON Schema 7 specification for typing. By strict, we mean that it is organized into logical types that represent real usage, disallowing certain "nonsense" combinations of fields.
 
 ## Example
 
