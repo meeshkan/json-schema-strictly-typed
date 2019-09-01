@@ -185,8 +185,10 @@ const generateTypes = ({
     i =>
       i !== "JSSTAnything" &&
       i !== "JSSTTopLevel" &&
+      i !== "JSSTProtoInteger" &&
       i !== "JSSTProtoNumber" &&
-      i !== "JSSTProtoString"
+      i !== "JSSTProtoString" &&
+      i !== "JSSTProtoArray"
   );
   const newDefinitions = {
     ...definitions,

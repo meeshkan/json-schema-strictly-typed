@@ -60,22 +60,29 @@ definitions:
       - $ref: "#/definitions/JSSTIntegerWithMaximum"
       - $ref: "#/definitions/JSSTIntegerWithBounds"
       - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveMinimum"
+      - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveMinimumAndMaximum"
       - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveMaximum"
+      - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveMaximumAndMinimum"
       - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveBounds"
       - $ref: "#/definitions/JSSTIntegerEnum"
-  JSSTSimpleInteger:
+  JSSTProtoInteger:
     type: object
     required:
       - type
     properties:
       type:
         const: integer
-      multipleOf:
-        type: integer
-        minimum: 0
+  JSSTSimpleInteger:
+    allOf:
+      - $ref: "#/definitions/JSSTProtoInteger"
+      - type: object
+        properties:
+          multipleOf:
+            type: integer
+            minimum: 0
   JSSTIntegerWithMinimum:
     allOf:
-      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTProtoInteger"
       - type: object
         required:
           - minimum
@@ -86,7 +93,7 @@ definitions:
             type: boolean
   JSSTIntegerWithMaximum:
     allOf:
-      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTProtoInteger"
       - type: object
         required:
           - maximum
@@ -97,7 +104,7 @@ definitions:
             type: boolean
   JSSTIntegerWithBounds:
     allOf:
-      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTProtoInteger"
       - type: object
         required:
           - minimum
@@ -113,25 +120,53 @@ definitions:
             type: boolean
   JSSTIntegerWithNumericExclusiveMinimum:
     allOf:
-      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTProtoInteger"
       - type: object
         required:
           - exclusiveMinimum
         properties:
           exclusiveMinimum:
             type: integer
+  JSSTIntegerWithNumericExclusiveMinimumAndMaximum:
+    allOf:
+      - $ref: "#/definitions/JSSTProtoInteger"
+      - type: object
+        required:
+          - exclusiveMinimum
+          - maximum
+        properties:
+          exclusiveMinimum:
+            type: integer
+          maximum:
+            type: integer
+          exclusiveMaximum:
+            type: boolean
   JSSTIntegerWithNumericExclusiveMaximum:
     allOf:
-      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTProtoInteger"
       - type: object
         required:
           - exclusiveMaximum
         properties:
           exclusiveMaximum:
             type: integer
+  JSSTIntegerWithNumericExclusiveMaximumAndMinimum:
+    allOf:
+      - $ref: "#/definitions/JSSTProtoInteger"
+      - type: object
+        required:
+          - exclusiveMaximum
+          - minimum
+        properties:
+          exclusiveMaximum:
+            type: integer
+          minimum:
+            type: integer
+          exclusiveMinimum:
+            type: boolean
   JSSTIntegerWithNumericExclusiveBounds:
     allOf:
-      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTProtoInteger"
       - type: object
         required:
           - exclusiveMinimum
@@ -143,7 +178,7 @@ definitions:
             type: integer
   JSSTIntegerEnum:
     allOf:
-      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTProtoInteger"
       - type: object
         required:
           - enum
@@ -413,34 +448,40 @@ definitions:
     anyOf:
       - $ref: "#/definitions/JSSTList"
       - $ref: "#/definitions/JSSTTuple"
+  JSSTProtoArray:
+    type: object
+    required:
+      - type
+      - items
+    properties:
+      type:
+        const: array
   JSSTList:
-    type: object
-    required:
-      - type
-      - items
-    properties:
-      type:
-        const: array
-      items:
-        $ref: "#/definitions/JSSTAnything"
-      uniqueItems:
-        type: boolean
-      minItems:
-        type: integer
-      maxItems:
-        type: integer
+    allOf:
+      - $ref: "#/definitions/JSSTProtoArray"
+      - type: object
+        required:
+          - items
+        properties:
+          items:
+            $ref: "#/definitions/JSSTAnything"
+          uniqueItems:
+            type: boolean
+          minItems:
+            type: integer
+          maxItems:
+            type: integer
   JSSTTuple:
-    type: object
-    required:
-      - type
-      - items
-    properties:
-      type:
-        const: array
-      items:
-        type: array
-        items:
-          $ref: "#/definitions/JSSTAnything"
+    allOf:
+      - $ref: "#/definitions/JSSTProtoArray"
+      - type: object
+        required:
+          - items
+        properties:
+          items:
+            type: array
+            items:
+              $ref: "#/definitions/JSSTAnything"
   JSSTObject:
     type: object
     required:
