@@ -181,16 +181,30 @@ const generateTypes = ({
   mkdirp.sync(path.dirname(output));
   const full = yaml.load(fs.readFileSync(input).toString());
   const { definitions, ...fullObj } = full;
-  const declarations = Object.entries(definitions)
+  const toTopLevel: string[] = definitions.JSSTAnything.anyOf.map(
+    (i: { $ref: string }) => i.$ref.split("/")[2]
+  );
+  const newDefinitions = {
+    ...definitions,
+    ...toTopLevel
+      .map(i => ({
+        [`${i}TopLevel`]: {
+          allOf: [
+            { $ref: "#/definitions/" + i },
+            { $ref: "#/definitions/JSSTTopLevel" }
+          ]
+        }
+      }))
+      .reduce((a, b) => ({ ...a, ...b }), {})
+  };
+  const declarations = Object.entries(newDefinitions)
     .map(([a, b]) => t.typeDeclaration(a, to(b as JSONSchema)))
     .concat(t.typeDeclaration(toplevel, to(fullObj as JSONSchema)));
   const sorted = t.sort(declarations);
   fs.writeFileSync(
     output,
     prettier.format(
-      [
-        `import * as t from "io-ts";`
-      ]
+      [`import * as t from "io-ts";`]
         .concat(sorted.map(d => `export ${t.printRuntime(d)}`))
         .concat(sorted.map(d => `export ${t.printStatic(d)}`))
         .join("\n"),

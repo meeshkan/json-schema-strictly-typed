@@ -22,7 +22,8 @@ import {
   JSSTNull,
   JSSTEmpty,
   JSSTConst,
-  JSSTReference
+  JSSTReference,
+  JSSTReferenceTopLevel
 } from "../src/";
 
 test("JSSTEmpty", () => {
@@ -153,4 +154,9 @@ test("JSSTNot", () => {
     not: { type: "object", properties: { foo: { type: "string" } } }
   };
   expect(JSSTNot.is(_)).toBe(true);
+});
+
+test("JSSTReference with top level works", () => {
+  const _: JSSTReferenceTopLevel = { $ref: "foo", definitions: {} };
+  expect(JSSTReferenceTopLevel.is(_)).toBe(true);
 });
