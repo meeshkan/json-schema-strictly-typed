@@ -181,9 +181,14 @@ const generateTypes = ({
   mkdirp.sync(path.dirname(output));
   const full = yaml.load(fs.readFileSync(input).toString());
   const { definitions, ...fullObj } = full;
-  const toTopLevel: string[] = definitions.JSSTAnything.anyOf.map(
-    (i: { $ref: string }) => i.$ref.split("/")[2]
-  );
+  const toTopLevel: string[] = Object.keys(definitions)
+    .filter(
+      i =>
+        i !== "JSSTAnything" &&
+        i !== "JSSTTopLevel" &&
+        i !== "JSSTProtoNumber" &&
+        i !== "JSSTProtoString"
+    );
   const newDefinitions = {
     ...definitions,
     ...toTopLevel
