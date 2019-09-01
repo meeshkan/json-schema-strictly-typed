@@ -1,0 +1,484 @@
+type: object
+definitions:
+  JSSTAnything:
+    anyOf:
+      - $ref: "#/definitions/JSSTEmpty"
+      - $ref: "#/definitions/JSSTConst"
+      - $ref: "#/definitions/JSSTReference"
+      - $ref: "#/definitions/JSSTNull"
+      - $ref: "#/definitions/JSSTBoolean"
+      - $ref: "#/definitions/JSSTInteger"
+      - $ref: "#/definitions/JSSTNumber"
+      - $ref: "#/definitions/JSSTString"
+      - $ref: "#/definitions/JSSTArray"
+      - $ref: "#/definitions/JSSTObject"
+      - $ref: "#/definitions/JSSTOneOf"
+      - $ref: "#/definitions/JSSTAnyOf"
+      - $ref: "#/definitions/JSSTAllOf"
+      - $ref: "#/definitions/JSSTNot"
+  JSSTEmpty:
+    type: object
+  JSSTConst:
+    type: object
+    required:
+      - const
+    properties:
+      const:
+        anyOf:
+          - type: integer
+          - type: number
+          - type: string
+          - type: boolean
+          - type: 'null'
+          - type: array
+          - type: object
+  JSSTReference:
+    type: object
+    required:
+      - $ref
+    properties:
+      $ref:
+        type: string
+  JSSTNull:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        const: 'null'
+  JSSTBoolean:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        const: boolean
+  JSSTInteger:
+    anyOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - $ref: "#/definitions/JSSTIntegerWithMinimum"
+      - $ref: "#/definitions/JSSTIntegerWithMaximum"
+      - $ref: "#/definitions/JSSTIntegerWithBounds"
+      - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveMinimum"
+      - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveMaximum"
+      - $ref: "#/definitions/JSSTIntegerWithNumericExclusiveBounds"
+      - $ref: "#/definitions/JSSTIntegerEnum"
+  JSSTSimpleInteger:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        const: integer
+      multipleOf:
+        type: integer
+        minimum: 0
+  JSSTIntegerWithMinimum:
+    allOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - type: object
+        required:
+          - minimum
+        properties:
+          minimum:
+            type: integer
+          exclusiveMinimum:
+            type: boolean
+  JSSTIntegerWithMaximum:
+    allOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - type: object
+        required:
+          - maximum
+        properties:
+          maximum:
+            type: integer
+          exclusiveMaximum:
+            type: boolean
+  JSSTIntegerWithBounds:
+    allOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - type: object
+        required:
+          - minimum
+          - maximum
+        properties:
+          minimum:
+            type: integer
+          maximum:
+            type: integer
+          exclusiveMinimum:
+            type: boolean
+          exclusiveMaximum:
+            type: boolean
+  JSSTIntegerWithNumericExclusiveMinimum:
+    allOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - type: object
+        required:
+          - exclusiveMinimum
+        properties:
+          exclusiveMinimum:
+            type: integer
+  JSSTIntegerWithNumericExclusiveMaximum:
+    allOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - type: object
+        required:
+          - exclusiveMaximum
+        properties:
+          exclusiveMaximum:
+            type: integer
+  JSSTIntegerWithNumericExclusiveBounds:
+    allOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - type: object
+        required:
+          - exclusiveMinimum
+          - exclusiveMaximum
+        properties:
+          exclusiveMinimum:
+            type: integer
+          exclusiveMaximum:
+            type: integer
+  JSSTIntegerEnum:
+    allOf:
+      - $ref: "#/definitions/JSSTSimpleInteger"
+      - type: object
+        required:
+          - enum
+        properties:
+          enum:
+            type: array
+            items:
+              type: integer
+  JSSTNumber:
+    anyOf:
+      - $ref: "#/definitions/JSSTSimpleNumber"
+      - $ref: "#/definitions/JSSTNumberEnum"
+  JSSTProtoNumber:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        const: number
+  JSSTSimpleNumber:
+    allOf:
+      - $ref: "#/definitions/JSSTProtoNumber"
+      - type: object
+        properties:
+          minimum:
+            type: number
+          maximum:
+            type: number
+          multipleOf:
+            type: number
+            minimum: 0
+  JSSTNumberEnum:
+    allOf:
+      - $ref: "#/definitions/JSSTProtoNumber"
+      - type: object
+        required:
+          - enum
+        properties:
+          enum:
+            type: array
+            items:
+              type: number
+  JSSTAnyOf:
+    type: object
+    required:
+      - anyOf
+    properties:
+      anyOf:
+        type: array
+        items:
+          $ref: "#/definitions/JSSTAnything"
+  JSSTAllOf:
+    type: object
+    required:
+      - allOf
+    properties:
+      allOf:
+        type: array
+        items:
+          $ref: "#/definitions/JSSTAnything"
+  JSSTNot:
+    type: object
+    required:
+      - not
+    properties:
+      not:
+        $ref: "#/definitions/JSSTAnything"
+  JSSTOneOf:
+    type: object
+    required:
+      - oneOf
+    properties:
+      oneOf:
+        type: array
+        items:
+          $ref: "#/definitions/JSSTAnything"
+  JSSTString:
+    anyOf:
+      - $ref: "#/definitions/JSSTSimpleString"
+      - $ref: "#/definitions/JSSTRegex"
+      - $ref: "#/definitions/JSSTStringEnum"
+  JSSTProtoString:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        const: string
+  JSSTSimpleString:
+    allOf:
+      - $ref: "#/definitions/JSSTProtoString"
+      - type: object
+        properties:
+          faker:
+            type: string
+            enum:
+              - "address.zipCode"
+              - "address.city"
+              - "address.cityPrefix"
+              - "address.citySuffix"
+              - "address.streetName"
+              - "address.streetAddress"
+              - "address.streetSuffix"
+              - "address.streetPrefix"
+              - "address.secondaryAddress"
+              - "address.county"
+              - "address.country"
+              - "address.countryCode"
+              - "address.state"
+              - "address.stateAbbr"
+              - "address.latitude"
+              - "address.longitude"
+              - "commerce.color"
+              - "commerce.department"
+              - "commerce.productName"
+              - "commerce.price"
+              - "commerce.productAdjective"
+              - "commerce.productMaterial"
+              - "commerce.product"
+              - "company.suffixes"
+              - "company.companyName"
+              - "company.companySuffix"
+              - "company.catchPhrase"
+              - "company.bs"
+              - "company.catchPhraseAdjective"
+              - "company.catchPhraseDescriptor"
+              - "company.catchPhraseNoun"
+              - "company.bsAdjective"
+              - "company.bsBuzz"
+              - "company.bsNoun"
+              - "database.column"
+              - "database.type"
+              - "database.collation"
+              - "database.engine"
+              - "date.past"
+              - "date.future"
+              - "date.between"
+              - "date.recent"
+              - "date.soon"
+              - "date.month"
+              - "date.weekday"
+              - "finance.account"
+              - "finance.accountName"
+              - "finance.mask"
+              - "finance.amount"
+              - "finance.transactionType"
+              - "finance.currencyCode"
+              - "finance.currencyName"
+              - "finance.currencySymbol"
+              - "finance.bitcoinAddress"
+              - "finance.ethereumAddress"
+              - "finance.iban"
+              - "finance.bic"
+              - "hacker.abbreviation"
+              - "hacker.adjective"
+              - "hacker.noun"
+              - "hacker.verb"
+              - "hacker.ingverb"
+              - "hacker.phrase"
+              - "helpers.randomize"
+              - "helpers.slugify"
+              - "helpers.replaceSymbolWithNumber"
+              - "helpers.replaceSymbols"
+              - "helpers.shuffle"
+              - "helpers.mustache"
+              - "helpers.createCard"
+              - "helpers.contextualCard"
+              - "helpers.userCard"
+              - "helpers.createTransaction"
+              - "image.image"
+              - "image.avatar"
+              - "image.imageUrl"
+              - "image.abstract"
+              - "image.animals"
+              - "image.business"
+              - "image.cats"
+              - "image.city"
+              - "image.food"
+              - "image.nightlife"
+              - "image.fashion"
+              - "image.people"
+              - "image.nature"
+              - "image.sports"
+              - "image.technics"
+              - "image.transport"
+              - "image.dataUri"
+              - "internet.avatar"
+              - "internet.email"
+              - "internet.exampleEmail"
+              - "internet.userName"
+              - "internet.protocol"
+              - "internet.url"
+              - "internet.domainName"
+              - "internet.domainSuffix"
+              - "internet.domainWord"
+              - "internet.ip"
+              - "internet.ipv6"
+              - "internet.userAgent"
+              - "internet.color"
+              - "internet.mac"
+              - "internet.password"
+              - "lorem.word"
+              - "lorem.words"
+              - "lorem.sentence"
+              - "lorem.slug"
+              - "lorem.sentences"
+              - "lorem.paragraph"
+              - "lorem.paragraphs"
+              - "lorem.text"
+              - "lorem.lines"
+              - "name.firstName"
+              - "name.lastName"
+              - "name.findName"
+              - "name.jobTitle"
+              - "name.prefix"
+              - "name.suffix"
+              - "name.title"
+              - "name.jobDescriptor"
+              - "name.jobArea"
+              - "name.jobType"
+              - "phone.phoneNumber"
+              - "phone.phoneNumberFormat"
+              - "phone.phoneFormats"
+              - "random.number"
+              - "random.float"
+              - "random.arrayElement"
+              - "random.objectElement"
+              - "random.uuid"
+              - "random.boolean"
+              - "random.word"
+              - "random.words"
+              - "random.image"
+              - "random.locale"
+              - "random.alphaNumeric"
+              - "random.hexaDecimal"
+              - "system.fileName"
+              - "system.commonFileName"
+              - "system.mimeType"
+              - "system.commonFileType"
+              - "system.commonFileExt"
+              - "system.fileType"
+              - "system.fileExt"
+              - "system.directoryPath"
+              - "system.filePath"
+              - "system.semver"
+  JSSTRegex:
+    allOf:
+      - $ref: "#/definitions/JSSTProtoString"
+      - type: object
+        required:
+          - pattern
+        properties:
+          pattern:
+            type: string
+  JSSTStringEnum:
+    allOf:
+    - $ref: "#/definitions/JSSTProtoString"
+    - type: object
+      required:
+        - enum
+      properties:
+        enum:
+          type: array
+          items:
+            type: string
+  JSSTArray:
+    anyOf:
+      - $ref: "#/definitions/JSSTList"
+      - $ref: "#/definitions/JSSTTuple"
+  JSSTList:
+    type: object
+    required:
+      - type
+      - items
+    properties:
+      type:
+        const: array
+      items:
+        $ref: "#/definitions/JSSTAnything"
+      uniqueItems:
+        type: boolean
+      minItems:
+        type: integer
+      maxItems:
+        type: integer
+  JSSTTuple:
+    type: object
+    required:
+      - type
+      - items
+    properties:
+      type:
+        const: array
+      items:
+        type: array
+        items:
+          $ref: "#/definitions/JSSTAnything"
+  JSSTObject:
+    type: object
+    required:
+      - type
+    properties:
+      type:
+        const: object
+      required:
+        type: array
+        items:
+          type: string
+      dependencies:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            type: string
+      additionalProperties:
+        anyOf:
+          - type: boolean
+          - $ref: "#/definitions/JSSTAnything"
+      patternProperties:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/JSSTAnything"
+      properties:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/JSSTAnything"
+  JSSTTopLevel:
+    type: object
+    properties:
+      $schema:
+        type: string
+      $id:
+        type: string
+      definitions:
+        type: object
+        additionalProperties:
+          $ref: "#/definitions/JSSTAnything"
+  
