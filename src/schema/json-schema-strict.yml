@@ -82,7 +82,7 @@ definitions:
             minimum: 0
   JSSTIntegerWithMinimum:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - minimum
@@ -93,7 +93,7 @@ definitions:
             type: boolean
   JSSTIntegerWithMaximum:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - maximum
@@ -104,7 +104,7 @@ definitions:
             type: boolean
   JSSTIntegerWithBounds:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - minimum
@@ -120,7 +120,7 @@ definitions:
             type: boolean
   JSSTIntegerWithNumericExclusiveMinimum:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - exclusiveMinimum
@@ -129,7 +129,7 @@ definitions:
             type: integer
   JSSTIntegerWithNumericExclusiveMinimumAndMaximum:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - exclusiveMinimum
@@ -143,7 +143,7 @@ definitions:
             type: boolean
   JSSTIntegerWithNumericExclusiveMaximum:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - exclusiveMaximum
@@ -152,7 +152,7 @@ definitions:
             type: integer
   JSSTIntegerWithNumericExclusiveMaximumAndMinimum:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - exclusiveMaximum
@@ -166,7 +166,7 @@ definitions:
             type: boolean
   JSSTIntegerWithNumericExclusiveBounds:
     allOf:
-      - $ref: "#/definitions/JSSTProtoInteger"
+      - $ref: "#/definitions/JSSTSimpleInteger"
       - type: object
         required:
           - exclusiveMinimum

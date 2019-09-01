@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.4`
+
+* Fixes bug with multipleOf in integers.
+
 ## `v0.0.3`
 
 * More robust integer types for blending min/max.
