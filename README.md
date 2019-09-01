@@ -61,3 +61,4 @@ There is plenty of stuff that is not implemented yet.  I'd really appreciate you
 
 * finish implementing the JSON Schema 7 Specification
 * add various schema extensions
+* use XOR combinator instead of `|` for types to avoid nonsense unoins
