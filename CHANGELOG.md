@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.8`
+
+* Exports JSON validators like `JSONValue`.
+
 ## `v0.0.7`
 
 * More robust const type

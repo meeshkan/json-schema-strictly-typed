@@ -118,14 +118,14 @@ export const JSSTNot = <T = JSSTEmpty>(
   );
 export const JSSTNot_ = JSSTNot(JSSTEmpty);
 
-const JSONPrimitive = t.union([t.number, t.boolean, t.string, t.null]);
-const JSONValue: t.Type<JSONValue> = t.recursion("JSONValue", () =>
+export const JSONPrimitive = t.union([t.number, t.boolean, t.string, t.null]);
+export const JSONValue: t.Type<JSONValue> = t.recursion("JSONValue", () =>
   t.union([JSONPrimitive, JSONObject, JSONArray])
 );
-const JSONObject: t.Type<JSONObject> = t.recursion("JSONObject", () =>
+export const JSONObject: t.Type<JSONObject> = t.recursion("JSONObject", () =>
   t.record(t.string, JSONValue)
 );
-const JSONArray: t.Type<JSONArray> = t.recursion("JSONArray", () =>
+export const JSONArray: t.Type<JSONArray> = t.recursion("JSONArray", () =>
   t.array(JSONValue)
 );
 
