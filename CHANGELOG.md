@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.5`
+
+* Allows for generic type to extend strict types.
+
 ## `v0.0.4`
 
 * Fixes bug with multipleOf in integers.

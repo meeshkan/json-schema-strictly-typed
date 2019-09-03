@@ -20,16 +20,19 @@ import {
   JSSTNot,
   JSSTBoolean,
   JSSTNull,
-  JSSTEmpty,
   JSSTConst,
   JSSTReference,
-  JSSTReferenceTopLevel
+  JSSTReferenceTopLevel,
+  JSSTEmpty,
+  JSSTAnything,
+  JSSTArray_,
+  JSSTObject_,
+  JSSTOneOf_,
+  JSSTAnyOf_,
+  JSSTAllOf_,
+  JSSTNot_,
+  JSSTReferenceTopLevel_
 } from "../src/";
-
-test("JSSTEmpty", () => {
-  const _: JSSTEmpty = {};
-  expect(JSSTEmpty.is(_)).toBe(true);
-});
 
 test("JSSTConst", () => {
   const _: JSSTConst = { const: "foo" };
@@ -111,13 +114,13 @@ test("JSSTString with enum", () => {
 test("JSSTArray as list", () => {
   const _: JSSTList = { type: "array", items: { type: "string" } };
   const __: JSSTArray = _;
-  expect(JSSTArray.is(_)).toBe(true);
+  expect(JSSTArray_.is(_)).toBe(true);
 });
 
 test("JSSTArray as tuple", () => {
   const _: JSSTTuple = { type: "array", items: [{ type: "string" }] };
   const __: JSSTArray = _;
-  expect(JSSTArray.is(_)).toBe(true);
+  expect(JSSTArray_.is(_)).toBe(true);
 });
 
 test("JSSTObject", () => {
@@ -125,38 +128,56 @@ test("JSSTObject", () => {
     type: "object",
     properties: { foo: { type: "string" } }
   };
-  expect(JSSTObject.is(_)).toBe(true);
+  expect(JSSTObject_.is(_)).toBe(true);
+});
+import * as t from "io-ts";
+test("JSSTObject with custom property", () => {
+  const _: JSSTObject<Date> = {
+    type: "object",
+    properties: { foo: { type: "string" }, bar: new Date() }
+  };
+  expect(
+    JSSTObject(
+      new t.Type<Date, Date, unknown>(
+        "Date",
+        (input: unknown): input is Date => input instanceof Date,
+        (input, context) =>
+          input instanceof Date ? t.success(input) : t.failure(input, context),
+        t.identity
+      )
+    ).is(_)
+  ).toBe(true);
 });
 
 test("JSSTOneOf", () => {
   const _: JSSTOneOf = {
     oneOf: [{ type: "object", properties: { foo: { type: "string" } } }]
   };
-  expect(JSSTOneOf.is(_)).toBe(true);
+  expect(JSSTOneOf_.is(_)).toBe(true);
 });
 
 test("JSSTAnyOf", () => {
   const _: JSSTAnyOf = {
     anyOf: [{ type: "object", properties: { foo: { type: "string" } } }]
   };
-  expect(JSSTAnyOf.is(_)).toBe(true);
+  expect(JSSTAnyOf_.is(_)).toBe(true);
 });
 
 test("JSSTAllOf", () => {
   const _: JSSTAllOf = {
     allOf: [{ type: "object", properties: { foo: { type: "string" } } }]
   };
-  expect(JSSTAllOf.is(_)).toBe(true);
+  expect(JSSTAllOf_.is(_)).toBe(true);
 });
 
 test("JSSTNot", () => {
   const _: JSSTNot = {
     not: { type: "object", properties: { foo: { type: "string" } } }
   };
-  expect(JSSTNot.is(_)).toBe(true);
+  expect(JSSTNot_.is(_)).toBe(true);
 });
 
 test("JSSTReference with top level works", () => {
   const _: JSSTReferenceTopLevel = { $ref: "foo", definitions: {} };
-  expect(JSSTReferenceTopLevel.is(_)).toBe(true);
+  expect(JSSTReferenceTopLevel_.is(_)).toBe(true);
 });

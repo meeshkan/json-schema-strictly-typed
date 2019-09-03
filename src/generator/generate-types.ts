@@ -87,9 +87,7 @@ function getRequiredProperties(schema: ObjectSchema): { [key: string]: true } {
   return required;
 }
 
-function toInterfaceCombinator(
-  schema: ObjectSchema
-): t.InterfaceCombinator | t.BrandCombinator {
+function toInterfaceCombinator(schema: ObjectSchema): t.InterfaceCombinator {
   const required = getRequiredProperties(schema);
   const out = t.interfaceCombinator(
     Object.entries(schema.properties || {}).map(([k, v]) =>
@@ -223,6 +221,6 @@ const generateTypes = ({
 
 generateTypes({
   input: "./src/schema/json-schema-strict.yml",
-  output: "./src/index.ts",
+  output: "./src/index2.ts",
   toplevel: "JSONSchemaObject"
 });
