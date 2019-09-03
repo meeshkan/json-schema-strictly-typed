@@ -513,8 +513,7 @@ export const JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel_ = JSSTInt
 );
 export const JSSTIntegerWithNumericExclusiveMaximumTopLevel = <T = JSSTEmpty>(
   c: t.Type<T, T>
-) => <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTIntegerWithNumericExclusiveMaximum, JSSTTopLevel(c)]);
+) => t.intersection([JSSTIntegerWithNumericExclusiveMaximum, JSSTTopLevel(c)]);
 export const JSSTIntegerWithNumericExclusiveMaximumTopLevel_ = JSSTIntegerWithNumericExclusiveMaximumTopLevel(
   JSSTEmpty
 );
@@ -584,7 +583,45 @@ export const JSSTTupleTopLevel_ = JSSTTupleTopLevel(JSSTEmpty);
 export const JSSTObjectTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
   t.intersection([JSSTObject(c), JSSTTopLevel(c)]);
 export const JSSTObjectTopLevel_ = JSSTObjectTopLevel(JSSTEmpty);
-export const JSONSchemaObject = t.type({});
+export const JSONSchemaObject = <T = JSSTEmpty>(
+  c: t.Type<T, T>
+): t.Type<JSONSchemaObject<T>> =>
+  t.recursion("JSONSchemaObject", () =>
+    t.union([
+      JSSTEmptyTopLevel(c),
+      JSSTConstTopLevel(c),
+      JSSTReferenceTopLevel(c),
+      JSSTNullTopLevel(c),
+      JSSTBooleanTopLevel(c),
+      JSSTIntegerTopLevel(c),
+      JSSTSimpleIntegerTopLevel(c),
+      JSSTIntegerWithMinimumTopLevel(c),
+      JSSTIntegerWithMaximumTopLevel(c),
+      JSSTIntegerWithBoundsTopLevel(c),
+      JSSTIntegerWithNumericExclusiveMinimumTopLevel(c),
+      JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel(c),
+      JSSTIntegerWithNumericExclusiveMaximumTopLevel(c),
+      JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel(c),
+      JSSTIntegerWithNumericExclusiveBoundsTopLevel(c),
+      JSSTIntegerEnumTopLevel(c),
+      JSSTNumberTopLevel(c),
+      JSSTSimpleNumberTopLevel(c),
+      JSSTNumberEnumTopLevel(c),
+      JSSTAnyOfTopLevel(c),
+      JSSTAllOfTopLevel(c),
+      JSSTNotTopLevel(c),
+      JSSTOneOfTopLevel(c),
+      JSSTStringTopLevel(c),
+      JSSTSimpleStringTopLevel(c),
+      JSSTRegexTopLevel(c),
+      JSSTStringEnumTopLevel(c),
+      JSSTArrayTopLevel(c),
+      JSSTListTopLevel(c),
+      JSSTTupleTopLevel(c),
+      JSSTObjectTopLevel(c)
+    ])
+  );
+
 export type JSSTList<T = JSSTEmpty> = JSSTProtoArray & {
   items: JSSTAnything<T>;
   uniqueItems?: boolean;
@@ -1035,4 +1072,35 @@ export type JSSTArrayTopLevel<T = JSSTEmpty> = JSSTArray<T> & JSSTTopLevel<T>;
 export type JSSTListTopLevel<T = JSSTEmpty> = JSSTList<T> & JSSTTopLevel<T>;
 export type JSSTTupleTopLevel<T = JSSTEmpty> = JSSTTuple<T> & JSSTTopLevel<T>;
 export type JSSTObjectTopLevel<T = JSSTEmpty> = JSSTObject<T> & JSSTTopLevel<T>;
-export interface JSONSchemaObject {}
+export type JSONSchemaObject<T> =
+  | JSSTEmptyTopLevel<T>
+  | JSSTConstTopLevel<T>
+  | JSSTReferenceTopLevel<T>
+  | JSSTNullTopLevel<T>
+  | JSSTBooleanTopLevel<T>
+  | JSSTIntegerTopLevel<T>
+  | JSSTSimpleIntegerTopLevel<T>
+  | JSSTIntegerWithMinimumTopLevel<T>
+  | JSSTIntegerWithMaximumTopLevel<T>
+  | JSSTIntegerWithBoundsTopLevel<T>
+  | JSSTIntegerWithNumericExclusiveMinimumTopLevel<T>
+  | JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel<T>
+  | JSSTIntegerWithNumericExclusiveMaximumTopLevel<T>
+  | JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel<T>
+  | JSSTIntegerWithNumericExclusiveBoundsTopLevel<T>
+  | JSSTIntegerEnumTopLevel<T>
+  | JSSTNumberTopLevel<T>
+  | JSSTSimpleNumberTopLevel<T>
+  | JSSTNumberEnumTopLevel<T>
+  | JSSTAnyOfTopLevel<T>
+  | JSSTAllOfTopLevel<T>
+  | JSSTNotTopLevel<T>
+  | JSSTOneOfTopLevel<T>
+  | JSSTStringTopLevel<T>
+  | JSSTSimpleStringTopLevel<T>
+  | JSSTRegexTopLevel<T>
+  | JSSTStringEnumTopLevel<T>
+  | JSSTArrayTopLevel<T>
+  | JSSTListTopLevel<T>
+  | JSSTTupleTopLevel<T>
+  | JSSTObjectTopLevel<T>;

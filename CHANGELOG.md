@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.9`
+
+* Defines robust type checks for toplevel type.
+
 ## `v0.0.8`
 
 * Exports JSON validators like `JSONValue`.

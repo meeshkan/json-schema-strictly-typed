@@ -201,6 +201,7 @@ const generateTypes = ({
       }))
       .reduce((a, b) => ({ ...a, ...b }), {})
   };
+
   const declarations = Object.entries(newDefinitions)
     .map(([a, b]) => t.typeDeclaration(a, to(b as JSONSchema)))
     .concat(t.typeDeclaration(toplevel, to(fullObj as JSONSchema)));
