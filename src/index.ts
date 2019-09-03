@@ -583,6 +583,9 @@ export const JSSTTupleTopLevel_ = JSSTTupleTopLevel(JSSTEmpty);
 export const JSSTObjectTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
   t.intersection([JSSTObject(c), JSSTTopLevel(c)]);
 export const JSSTObjectTopLevel_ = JSSTObjectTopLevel(JSSTEmpty);
+export const JSSTGenericTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
+  t.intersection([c, JSSTTopLevel(c)]);
+export const JSSTGenericTopLevel_ = JSSTGenericTopLevel(JSSTEmpty);
 export const JSONSchemaObject = <T = JSSTEmpty>(
   c: t.Type<T, T>
 ): t.Type<JSONSchemaObject<T>> =>
@@ -618,7 +621,8 @@ export const JSONSchemaObject = <T = JSSTEmpty>(
       JSSTArrayTopLevel(c),
       JSSTListTopLevel(c),
       JSSTTupleTopLevel(c),
-      JSSTObjectTopLevel(c)
+      JSSTObjectTopLevel(c),
+      JSSTGenericTopLevel(c)
     ])
   );
 
@@ -1072,6 +1076,7 @@ export type JSSTArrayTopLevel<T = JSSTEmpty> = JSSTArray<T> & JSSTTopLevel<T>;
 export type JSSTListTopLevel<T = JSSTEmpty> = JSSTList<T> & JSSTTopLevel<T>;
 export type JSSTTupleTopLevel<T = JSSTEmpty> = JSSTTuple<T> & JSSTTopLevel<T>;
 export type JSSTObjectTopLevel<T = JSSTEmpty> = JSSTObject<T> & JSSTTopLevel<T>;
+export type JSSTGenericTopLevel<T = JSSTEmpty> = T & JSSTTopLevel<T>;
 export type JSONSchemaObject<T> =
   | JSSTEmptyTopLevel<T>
   | JSSTConstTopLevel<T>
@@ -1103,4 +1108,5 @@ export type JSONSchemaObject<T> =
   | JSSTArrayTopLevel<T>
   | JSSTListTopLevel<T>
   | JSSTTupleTopLevel<T>
-  | JSSTObjectTopLevel<T>;
+  | JSSTObjectTopLevel<T>
+  | JSSTGenericTopLevel<T>;

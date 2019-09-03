@@ -30,7 +30,9 @@ import {
   JSSTAnyOf_,
   JSSTAllOf_,
   JSSTNot_,
-  JSSTReferenceTopLevel_
+  JSSTReferenceTopLevel_,
+  JSSTGenericTopLevel,
+  JSSTGenericTopLevel_
 } from "../src/";
 
 test("JSSTConst", () => {
@@ -130,23 +132,26 @@ test("JSSTObject", () => {
   expect(JSSTObject_.is(_)).toBe(true);
 });
 
+const DateType = new t.Type<Date, Date, unknown>(
+  "Date",
+  (input: unknown): input is Date => input instanceof Date,
+  (input, context) =>
+    input instanceof Date ? t.success(input) : t.failure(input, context),
+  t.identity
+);
 test("JSSTObject with custom property", () => {
   const _: JSSTObject<Date> = {
     type: "object",
     properties: { foo: { type: "string" }, bar: new Date() }
   };
   expect(JSSTObject_.is(_)).toBe(false);
-  expect(
-    JSSTObject(
-      new t.Type<Date, Date, unknown>(
-        "Date",
-        (input: unknown): input is Date => input instanceof Date,
-        (input, context) =>
-          input instanceof Date ? t.success(input) : t.failure(input, context),
-        t.identity
-      )
-    ).is(_)
-  ).toBe(true);
+  expect(JSSTObject(DateType).is(_)).toBe(true);
+});
+
+test("JSSTTopLevel with custom property", () => {
+  const _: JSSTGenericTopLevel<Date> = new Date();
+  expect(JSSTGenericTopLevel_.is(_)).toBe(false);
+  expect(JSSTGenericTopLevel(DateType).is(_)).toBe(true);
 });
 
 test("JSSTOneOf", () => {
