@@ -3,3 +3,4 @@ src
 test
 coverage
 dist/src/generator
+dist/src/index2.*
