@@ -118,17 +118,21 @@ export const JSSTNot = <T = JSSTEmpty>(
   );
 export const JSSTNot_ = JSSTNot(JSSTEmpty);
 
-export const JSSTConst = t.type({
-  const: t.union([
-    t.number,
-    t.number,
-    t.string,
-    t.boolean,
-    t.null,
-    t.array(t.string),
-    t.type({})
-  ])
-});
+const JSONPrimitive = t.union([t.number, t.boolean, t.string, t.null]);
+const JSONValue: t.Type<JSONValue> = t.recursion("JSONValue", () =>
+  t.union([JSONPrimitive, JSONObject, JSONArray])
+);
+const JSONObject: t.Type<JSONObject> = t.recursion("JSONObject", () =>
+  t.record(t.string, JSONValue)
+);
+const JSONArray: t.Type<JSONArray> = t.recursion("JSONArray", () =>
+  t.array(JSONValue)
+);
+
+export const JSSTConst: t.Type<JSSTConst, JSSTConst> = t.recursion(
+  "JSSTConst",
+  () => t.type({ const: JSONValue })
+);
 export const JSSTReference = t.type({
   $ref: t.string
 });
@@ -675,8 +679,16 @@ export interface JSSTEmpty {
   [k: string]: never;
   [z: number]: never;
 }
+
+export type JSONPrimitive = number | boolean | string | null;
+export type JSONValue = JSONPrimitive | JSONArray | JSONObject;
+export type JSONObject = {
+  [k: string]: JSONValue;
+};
+export interface JSONArray extends Array<JSONValue> {}
+
 export interface JSSTConst {
-  const: number | number | string | boolean | null | Array<string>;
+  const: JSONValue;
 }
 export interface JSSTReference {
   $ref: string;

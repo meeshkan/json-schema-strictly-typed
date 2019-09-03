@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.7`
+
+* More robust const type
+
 ## `v0.0.6`
 
 * Introduces JSSTEmpty type as strictly empty.
