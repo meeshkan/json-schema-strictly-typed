@@ -1,3 +1,4 @@
+import * as t from "io-ts";
 import {
   JSSTInteger,
   JSSTIntegerWithMinimum,
@@ -23,8 +24,6 @@ import {
   JSSTConst,
   JSSTReference,
   JSSTReferenceTopLevel,
-  JSSTEmpty,
-  JSSTAnything,
   JSSTArray_,
   JSSTObject_,
   JSSTOneOf_,
@@ -130,12 +129,13 @@ test("JSSTObject", () => {
   };
   expect(JSSTObject_.is(_)).toBe(true);
 });
-import * as t from "io-ts";
+
 test("JSSTObject with custom property", () => {
   const _: JSSTObject<Date> = {
     type: "object",
     properties: { foo: { type: "string" }, bar: new Date() }
   };
+  expect(JSSTObject_.is(_)).toBe(false);
   expect(
     JSSTObject(
       new t.Type<Date, Date, unknown>(

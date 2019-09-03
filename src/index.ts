@@ -1,13 +1,13 @@
 import * as t from "io-ts";
 const _J = (input: unknown): input is JSSTEmpty =>
-  typeof input === "object" && Object.keys(<object>input).length === 0;
+  typeof input === "object" &&
+  !Object.getPrototypeOf(input) &&
+  Object.getOwnPropertyNames(<object>input).length === 0;
 export const JSSTEmpty = new t.Type<JSSTEmpty, JSSTEmpty, unknown>(
   "JSSTEmpty",
   (input: unknown): input is JSSTEmpty => _J(input),
-  // `t.success` and `t.failure` are helpers used to build `Either` instances
   (input, context) =>
     _J(input) ? t.success(input) : t.failure(input, context),
-  // `A` and `O` are the same, so `encode` is just the identity function
   t.identity
 );
 export const JSSTList = <T = JSSTEmpty>(

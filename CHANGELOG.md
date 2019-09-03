@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## `v0.0.6`
+
+* Introduces JSSTEmpty type as strictly empty.
+* Exports `JSSTArray_`-like to complement `JSSTArray`, where `JSSTArray_` uses `JSSTEmpty` as a default generic. In general, if a method `{Foo}` exists for generic type verification, `{Foo}_` does the verification with the `JSSTEmpty` as a generic. 
+
 ## `v0.0.5`
 
 * Allows for generic type to extend strict types.
