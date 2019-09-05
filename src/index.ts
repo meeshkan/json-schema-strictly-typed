@@ -15,12 +15,12 @@ export const JSSTEmpty = <U = any>(u: t.Type<U, U>) =>
     ),
     u
   ]);
-const JSSTEmpty_ = JSSTEmpty(t.any);
+export const JSSTEmpty_ = JSSTEmpty(t.any);
 
 export const JSSTList = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTList<T, U>, JSSTListOutput<T, U>> =>
+): t.Type<JSSTList<T, U>, JSSTList<T, U>> =>
   t.recursion("JSSTList", () =>
     t.intersection([
       JSSTProtoArray,
@@ -41,7 +41,7 @@ export const JSSTList_ = JSSTList(JSSTEmpty_, t.any);
 export const JSSTAnything = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTAnything<T, U>, JSSTAnythingOutput<T, U>> =>
+): t.Type<JSSTAnything<T, U>, JSSTAnything<T, U>> =>
   t.recursion("JSSTAnything", () =>
     t.union([
       JSSTEmpty(u),
@@ -64,7 +64,7 @@ export const JSSTAnything = <T = JSSTEmpty<any>, U = any>(
 export const JSSTTuple = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTTuple<T, U>, JSSTTupleOutput<T, U>> =>
+): t.Type<JSSTTuple<T, U>, JSSTTuple<T, U>> =>
   t.recursion("JSSTTuple", () =>
     t.intersection([
       JSSTProtoArray,
@@ -78,7 +78,7 @@ export const JSSTTuple_ = JSSTTuple(JSSTEmpty_, t.any);
 export const JSSTObject = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTObject<T, U>, JSSTObjectOutput<T, U>> =>
+): t.Type<JSSTObject<T, U>, JSSTObject<T, U>> =>
   t.recursion("JSSTObject", () =>
     t.intersection([
       t.type({
@@ -98,7 +98,7 @@ export const JSSTObject_ = JSSTObject(JSSTEmpty_, t.any);
 export const JSSTOneOf = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTOneOf<T, U>, JSSTOneOfOutput<T, U>> =>
+): t.Type<JSSTOneOf<T, U>, JSSTOneOf<T, U>> =>
   t.recursion("JSSTOneOf", () =>
     t.intersection([
       t.type({
@@ -111,7 +111,7 @@ export const JSSTOneOf_ = JSSTOneOf(JSSTEmpty_, t.any);
 export const JSSTAnyOf = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTAnyOf<T, U>, JSSTAnyOfOutput<T, U>> =>
+): t.Type<JSSTAnyOf<T, U>, JSSTAnyOf<T, U>> =>
   t.recursion("JSSTAnyOf", () =>
     t.intersection([
       t.type({
@@ -124,7 +124,7 @@ export const JSSTAnyOf_ = JSSTAnyOf(JSSTEmpty_, t.any);
 export const JSSTAllOf = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTAllOf<T, U>, JSSTAllOfOutput<T, U>> =>
+): t.Type<JSSTAllOf<T, U>, JSSTAllOf<T, U>> =>
   t.recursion("JSSTAllOf", () =>
     t.intersection([
       t.type({
@@ -137,7 +137,7 @@ export const JSSTAllOf_ = JSSTAllOf(JSSTEmpty_, t.any);
 export const JSSTNot = <T = JSSTEmpty<any>, U = any>(
   c: t.Type<T, T>,
   u: t.Type<U, U>
-): t.Type<JSSTNot<T, U>, JSSTNotOutput<T, U>> =>
+): t.Type<JSSTNot<T, U>, JSSTNot<T, U>> =>
   t.recursion("JSSTNot", () =>
     t.intersection([
       t.type({
@@ -165,6 +165,7 @@ export const JSSTConst = <U>(
   t.recursion("JSSTConst", () =>
     t.intersection([t.type({ const: JSONValue }), u])
   );
+export const JSSTConst_ = JSSTConst(t.any);
 export const JSSTReference = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
@@ -172,6 +173,7 @@ export const JSSTReference = <U>(u: t.Type<U, U>) =>
     }),
     u
   ]);
+export const JSSTReference_ = JSSTReference(t.any);
 export const JSSTNull = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
@@ -179,6 +181,7 @@ export const JSSTNull = <U>(u: t.Type<U, U>) =>
     }),
     u
   ]);
+export const JSSTNull_ = JSSTNull(t.any);
 export const JSSTBoolean = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
@@ -186,6 +189,7 @@ export const JSSTBoolean = <U>(u: t.Type<U, U>) =>
     }),
     u
   ]);
+export const JSSTBoolean_ = JSSTBoolean(t.any);
 export const JSSTProtoInteger = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
@@ -200,6 +204,7 @@ export const JSSTSimpleInteger = <U>(u: t.Type<U, U>) =>
       multipleOf: t.number
     })
   ]);
+export const JSSTSimpleInteger_ = JSSTSimpleInteger(t.any);
 export const JSSTIntegerWithMinimum = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTSimpleInteger(u),
@@ -212,6 +217,7 @@ export const JSSTIntegerWithMinimum = <U>(u: t.Type<U, U>) =>
       })
     ])
   ]);
+export const JSSTIntegerWithMinimum_ = JSSTIntegerWithMinimum(t.any);
 export const JSSTIntegerWithMaximum = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTSimpleInteger(u),
@@ -224,6 +230,7 @@ export const JSSTIntegerWithMaximum = <U>(u: t.Type<U, U>) =>
       })
     ])
   ]);
+export const JSSTIntegerWithMaximum_ = JSSTIntegerWithMaximum(t.any);
 export const JSSTIntegerWithBounds = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTSimpleInteger(u),
@@ -238,6 +245,7 @@ export const JSSTIntegerWithBounds = <U>(u: t.Type<U, U>) =>
       })
     ])
   ]);
+export const JSSTIntegerWithBounds_ = JSSTIntegerWithBounds(t.any);
 export const JSSTIntegerWithNumericExclusiveMinimum = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTSimpleInteger(u),
@@ -245,6 +253,9 @@ export const JSSTIntegerWithNumericExclusiveMinimum = <U>(u: t.Type<U, U>) =>
       exclusiveMinimum: t.number
     })
   ]);
+export const JSSTIntegerWithNumericExclusiveMinimum_ = JSSTIntegerWithNumericExclusiveMinimum(
+  t.any
+);
 export const JSSTIntegerWithNumericExclusiveMinimumAndMaximum = <U>(
   u: t.Type<U, U>
 ) =>
@@ -260,6 +271,9 @@ export const JSSTIntegerWithNumericExclusiveMinimumAndMaximum = <U>(
       })
     ])
   ]);
+export const JSSTIntegerWithNumericExclusiveMinimumAndMaximum_ = JSSTIntegerWithNumericExclusiveMinimumAndMaximum(
+  t.any
+);
 export const JSSTIntegerWithNumericExclusiveMaximum = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTSimpleInteger(u),
@@ -267,6 +281,9 @@ export const JSSTIntegerWithNumericExclusiveMaximum = <U>(u: t.Type<U, U>) =>
       exclusiveMaximum: t.number
     })
   ]);
+export const JSSTIntegerWithNumericExclusiveMaximum_ = JSSTIntegerWithNumericExclusiveMaximum(
+  t.any
+);
 export const JSSTIntegerWithNumericExclusiveMaximumAndMinimum = <U>(
   u: t.Type<U, U>
 ) =>
@@ -282,6 +299,9 @@ export const JSSTIntegerWithNumericExclusiveMaximumAndMinimum = <U>(
       })
     ])
   ]);
+export const JSSTIntegerWithNumericExclusiveMaximumAndMinimum_ = JSSTIntegerWithNumericExclusiveMaximumAndMinimum(
+  t.any
+);
 export const JSSTIntegerWithNumericExclusiveBounds = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTSimpleInteger(u),
@@ -290,6 +310,9 @@ export const JSSTIntegerWithNumericExclusiveBounds = <U>(u: t.Type<U, U>) =>
       exclusiveMaximum: t.number
     })
   ]);
+export const JSSTIntegerWithNumericExclusiveBounds_ = JSSTIntegerWithNumericExclusiveBounds(
+  t.any
+);
 export const JSSTIntegerEnum = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTProtoInteger(u),
@@ -297,6 +320,7 @@ export const JSSTIntegerEnum = <U>(u: t.Type<U, U>) =>
       enum: t.array(t.number)
     })
   ]);
+export const JSSTIntegerEnum_ = JSSTIntegerEnum(t.any);
 export const JSSTInteger = <U>(u: t.Type<U, U>) =>
   t.union([
     JSSTSimpleInteger(u),
@@ -310,6 +334,7 @@ export const JSSTInteger = <U>(u: t.Type<U, U>) =>
     JSSTIntegerWithNumericExclusiveBounds(u),
     JSSTIntegerEnum(u)
   ]);
+export const JSSTInteger_ = JSSTInteger(t.any);
 export const JSSTProtoNumber = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
@@ -317,6 +342,7 @@ export const JSSTProtoNumber = <U>(u: t.Type<U, U>) =>
     }),
     u
   ]);
+export const JSSTProtoNumber_ = JSSTProtoNumber(t.any);
 export const JSSTSimpleNumber = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTProtoNumber(u),
@@ -326,6 +352,7 @@ export const JSSTSimpleNumber = <U>(u: t.Type<U, U>) =>
       multipleOf: t.number
     })
   ]);
+export const JSSTSimpleNumber_ = JSSTSimpleNumber(t.any);
 export const JSSTNumberEnum = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTProtoNumber(u),
@@ -333,8 +360,10 @@ export const JSSTNumberEnum = <U>(u: t.Type<U, U>) =>
       enum: t.array(t.number)
     })
   ]);
+export const JSSTNumberEnum_ = JSSTNumberEnum(t.any);
 export const JSSTNumber = <U>(u: t.Type<U, U>) =>
   t.union([JSSTSimpleNumber(u), JSSTNumberEnum(u)]);
+export const JSSTNumber_ = JSSTNumber(t.any);
 export const JSSTProtoString = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
@@ -493,6 +522,7 @@ export const JSSTFaker = t.union([
   t.literal("system.filePath"),
   t.literal("system.semver")
 ]);
+export const JSSTProtoString_ = JSSTProtoString(t.any);
 export const JSSTSimpleString = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTProtoString(u),
@@ -500,6 +530,7 @@ export const JSSTSimpleString = <U>(u: t.Type<U, U>) =>
       faker: JSSTFaker
     })
   ]);
+export const JSSTSimpleString_ = JSSTSimpleString(t.any);
 export const JSSTRegex = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTProtoString(u),
@@ -507,6 +538,7 @@ export const JSSTRegex = <U>(u: t.Type<U, U>) =>
       pattern: t.string
     })
   ]);
+export const JSSTRegex_ = JSSTRegex(t.any);
 export const JSSTStringEnum = <U>(u: t.Type<U, U>) =>
   t.intersection([
     JSSTProtoString(u),
@@ -514,8 +546,10 @@ export const JSSTStringEnum = <U>(u: t.Type<U, U>) =>
       enum: t.array(t.string)
     })
   ]);
+export const JSSTStringEnum_ = JSSTStringEnum(t.any);
 export const JSSTString = <U>(u: t.Type<U, U>) =>
   t.union([JSSTSimpleString(u), JSSTRegex(u), JSSTStringEnum(u)]);
+export const JSSTString_ = JSSTString(t.any);
 export const JSSTProtoArray = t.type({
   type: t.literal("array")
 });
@@ -818,12 +852,6 @@ export type JSSTList<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
   minItems?: number;
   maxItems?: number;
 } & U;
-type JSSTListOutput<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
-  items: JSSTAnythingOutput<T, U>;
-  uniqueItems?: boolean;
-  minItems?: number;
-  maxItems?: number;
-};
 export type JSSTAnything<T = JSSTEmpty<any>, U = any> =
   | JSSTEmpty<U>
   | JSSTConst<U>
@@ -840,27 +868,8 @@ export type JSSTAnything<T = JSSTEmpty<any>, U = any> =
   | JSSTAllOf<T, U>
   | JSSTNot<T, U>
   | T;
-type JSSTAnythingOutput<T = JSSTEmpty<any>, U = any> =
-  | JSSTEmpty<U>
-  | JSSTConst<U>
-  | JSSTReference<U>
-  | JSSTNull<U>
-  | JSSTBoolean<U>
-  | JSSTInteger<U>
-  | JSSTNumber<U>
-  | JSSTString<U>
-  | JSSTArrayOutput<T, U>
-  | JSSTObjectOutput<T, U>
-  | JSSTOneOfOutput<T, U>
-  | JSSTAnyOfOutput<T, U>
-  | JSSTAllOfOutput<T, U>
-  | JSSTNotOutput<T, U>
-  | T;
 export type JSSTTuple<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
   items: Array<JSSTAnything<T, U>>;
-} & U;
-type JSSTTupleOutput<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
-  items: Array<JSSTAnythingOutput<T, U>>;
 } & U;
 export type JSSTObject<T = JSSTEmpty<any>, U = any> = {
   type: "object";
@@ -870,39 +879,19 @@ export type JSSTObject<T = JSSTEmpty<any>, U = any> = {
   patternProperties?: Record<string, JSSTAnything<T, U>>;
   properties?: Record<string, JSSTAnything<T, U>>;
 } & U;
-type JSSTObjectOutput<T = JSSTEmpty<any>, U = any> = {
-  type: "object";
-  required?: Array<string>;
-  dependencies?: Record<string, Array<string>>;
-  additionalProperties?: boolean | JSSTAnythingOutput<T, U>;
-  patternProperties?: Record<string, JSSTAnythingOutput<T, U>>;
-  properties?: Record<string, JSSTAnythingOutput<T, U>>;
-} & U;
 export type JSSTOneOf<T = JSSTEmpty<any>, U = any> = {
   oneOf: Array<JSSTAnything<T, U>>;
-} & U;
-type JSSTOneOfOutput<T = JSSTEmpty<any>, U = any> = {
-  oneOf: Array<JSSTAnythingOutput<T, U>>;
 } & U;
 export type JSSTAnyOf<T = JSSTEmpty<any>, U = any> = {
   anyOf: Array<JSSTAnything<T, U>>;
 } & U;
-type JSSTAnyOfOutput<T = JSSTEmpty<any>, U = any> = {
-  anyOf: Array<JSSTAnythingOutput<T, U>>;
-} & U;
 export type JSSTAllOf<T = JSSTEmpty<any>, U = any> = {
   allOf: Array<JSSTAnything<T, U>>;
-} & U;
-type JSSTAllOfOutput<T = JSSTEmpty<any>, U = any> = {
-  allOf: Array<JSSTAnythingOutput<T, U>>;
 } & U;
 export type JSSTNot<T = JSSTEmpty<any>, U = any> = {
   not: JSSTAnything<T, U>;
 } & U;
-type JSSTNotOutput<T = JSSTEmpty<any>, U = any> = {
-  not: JSSTAnythingOutput<T, U>;
-} & U;
-export type JSSTEmpty<U> = {
+export type JSSTEmpty<U = any> = {
   [k: string]: never;
   [z: number]: never;
 } & U;
@@ -914,39 +903,41 @@ export type JSONObject = {
 };
 export interface JSONArray extends Array<JSONValue> {}
 
-export type JSSTConst<U> = {
+export type JSSTConst<U = any> = {
   const: JSONValue;
 } & U;
-export type JSSTReference<U> = {
+export type JSSTReference<U = any> = {
   $ref: string;
 } & U;
-export type JSSTNull<U> = {
+export type JSSTNull<U = any> = {
   type: "null";
 } & U;
-export type JSSTBoolean<U> = {
+export type JSSTBoolean<U = any> = {
   type: "boolean";
 } & U;
-export type JSSTProtoInteger<U> = {
+export type JSSTProtoInteger<U = any> = {
   type: "integer";
 } & U;
-export type JSSTSimpleInteger<U> = JSSTProtoInteger<U> & {
+export type JSSTSimpleInteger<U = any> = JSSTProtoInteger<U> & {
   multipleOf?: number;
 };
-export type JSSTIntegerWithMinimum<U> = JSSTSimpleInteger<U> & {
+export type JSSTIntegerWithMinimum<U = any> = JSSTSimpleInteger<U> & {
   minimum: number;
   exclusiveMinimum?: boolean;
 };
-export type JSSTIntegerWithMaximum<U> = JSSTSimpleInteger<U> & {
+export type JSSTIntegerWithMaximum<U = any> = JSSTSimpleInteger<U> & {
   maximum: number;
   exclusiveMaximum?: boolean;
 };
-export type JSSTIntegerWithBounds<U> = JSSTSimpleInteger<U> & {
+export type JSSTIntegerWithBounds<U = any> = JSSTSimpleInteger<U> & {
   minimum: number;
   maximum: number;
   exclusiveMinimum?: boolean;
   exclusiveMaximum?: boolean;
 };
-export type JSSTIntegerWithNumericExclusiveMinimum<U> = JSSTSimpleInteger<U> & {
+export type JSSTIntegerWithNumericExclusiveMinimum<U = any> = JSSTSimpleInteger<
+  U
+> & {
   exclusiveMinimum: number;
 };
 export type JSSTIntegerWithNumericExclusiveMinimumAndMaximum<
@@ -956,7 +947,9 @@ export type JSSTIntegerWithNumericExclusiveMinimumAndMaximum<
   maximum: number;
   exclusiveMaximum?: boolean;
 };
-export type JSSTIntegerWithNumericExclusiveMaximum<U> = JSSTSimpleInteger<U> & {
+export type JSSTIntegerWithNumericExclusiveMaximum<U = any> = JSSTSimpleInteger<
+  U
+> & {
   exclusiveMaximum: number;
 };
 export type JSSTIntegerWithNumericExclusiveMaximumAndMinimum<
@@ -966,14 +959,16 @@ export type JSSTIntegerWithNumericExclusiveMaximumAndMinimum<
   minimum: number;
   exclusiveMinimum?: boolean;
 };
-export type JSSTIntegerWithNumericExclusiveBounds<U> = JSSTSimpleInteger<U> & {
+export type JSSTIntegerWithNumericExclusiveBounds<U = any> = JSSTSimpleInteger<
+  U
+> & {
   exclusiveMinimum: number;
   exclusiveMaximum: number;
 };
-export type JSSTIntegerEnum<U> = JSSTProtoInteger<U> & {
+export type JSSTIntegerEnum<U = any> = JSSTProtoInteger<U> & {
   enum: Array<number>;
 };
-export type JSSTInteger<U> =
+export type JSSTInteger<U = any> =
   | JSSTSimpleInteger<U>
   | JSSTIntegerWithMinimum<U>
   | JSSTIntegerWithMaximum<U>
@@ -984,19 +979,19 @@ export type JSSTInteger<U> =
   | JSSTIntegerWithNumericExclusiveMaximumAndMinimum<U>
   | JSSTIntegerWithNumericExclusiveBounds<U>
   | JSSTIntegerEnum<U>;
-export type JSSTProtoNumber<U> = {
+export type JSSTProtoNumber<U = any> = {
   type: "number";
 } & U;
-export type JSSTSimpleNumber<U> = JSSTProtoNumber<U> & {
+export type JSSTSimpleNumber<U = any> = JSSTProtoNumber<U> & {
   minimum?: number;
   maximum?: number;
   multipleOf?: number;
 };
-export type JSSTNumberEnum<U> = JSSTProtoNumber<U> & {
+export type JSSTNumberEnum<U = any> = JSSTProtoNumber<U> & {
   enum: Array<number>;
 };
-export type JSSTNumber<U> = JSSTSimpleNumber<U> | JSSTNumberEnum<U>;
-export type JSSTProtoString<U> = {
+export type JSSTNumber<U = any> = JSSTSimpleNumber<U> | JSSTNumberEnum<U>;
+export type JSSTProtoString<U = any> = {
   type: "string";
 } & U;
 export type JSSTFaker =
@@ -1149,16 +1144,16 @@ export type JSSTFaker =
   | "system.directoryPath"
   | "system.filePath"
   | "system.semver";
-export type JSSTSimpleString<U> = JSSTProtoString<U> & {
+export type JSSTSimpleString<U = any> = JSSTProtoString<U> & {
   faker?: JSSTFaker;
 };
-export type JSSTRegex<U> = JSSTProtoString<U> & {
+export type JSSTRegex<U = any> = JSSTProtoString<U> & {
   pattern: string;
 };
-export type JSSTStringEnum<U> = JSSTProtoString<U> & {
+export type JSSTStringEnum<U = any> = JSSTProtoString<U> & {
   enum: Array<string>;
 };
-export type JSSTString<U> =
+export type JSSTString<U = any> =
   | JSSTSimpleString<U>
   | JSSTRegex<U>
   | JSSTStringEnum<U>;
@@ -1168,9 +1163,6 @@ export interface JSSTProtoArray {
 export type JSSTArray<T = JSSTEmpty<any>, U = any> =
   | JSSTList<T, U>
   | JSSTTuple<T, U>;
-export type JSSTArrayOutput<T = JSSTEmpty<any>, U = any> =
-  | JSSTListOutput<T, U>
-  | JSSTTupleOutput<T, U>;
 export interface JSSTTopLevel<T = JSSTEmpty<any>, U = any> {
   $schema?: string;
   $id?: string;

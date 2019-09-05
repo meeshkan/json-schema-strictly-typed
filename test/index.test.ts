@@ -32,39 +32,46 @@ import {
   JSSTNot_,
   JSSTReferenceTopLevel_,
   JSSTGenericTopLevel,
-  JSSTGenericTopLevel_
+  JSSTGenericTopLevel_,
+  JSSTNumber_,
+  JSSTInteger_,
+  JSSTString_,
+  JSSTReference_,
+  JSSTConst_,
+  JSSTNull_,
+  JSSTBoolean_
 } from "../src/";
 
 test("JSSTConst", () => {
   const _: JSSTConst = { const: "foo" };
-  expect(JSSTConst.is(_)).toBe(true);
+  expect(JSSTConst_.is(_)).toBe(true);
 });
 
 test("JSSTReference", () => {
   const _: JSSTReference = { $ref: "foo" };
-  expect(JSSTReference.is(_)).toBe(true);
+  expect(JSSTReference_.is(_)).toBe(true);
 });
 
 test("JSSTNull", () => {
   const _: JSSTNull = { type: "null" };
-  expect(JSSTNull.is(_)).toBe(true);
+  expect(JSSTNull_.is(_)).toBe(true);
 });
 
 test("JSSTBoolean", () => {
   const _: JSSTBoolean = { type: "boolean" };
-  expect(JSSTBoolean.is(_)).toBe(true);
+  expect(JSSTBoolean_.is(_)).toBe(true);
 });
 
 test("JSSTInteger", () => {
   const _: JSSTSimpleInteger = { type: "integer" };
   const __: JSSTInteger = _;
-  expect(JSSTInteger.is(_)).toBe(true);
+  expect(JSSTInteger_.is(_)).toBe(true);
 });
 
 test("JSSTInteger with minimum", () => {
   const _: JSSTIntegerWithMinimum = { type: "integer", minimum: 0 };
   const __: JSSTInteger = _;
-  expect(JSSTInteger.is(_)).toBe(true);
+  expect(JSSTInteger_.is(_)).toBe(true);
 });
 
 test("JSSTInteger with exclusiveMaximum", () => {
@@ -73,43 +80,43 @@ test("JSSTInteger with exclusiveMaximum", () => {
     exclusiveMaximum: 0
   };
   const __: JSSTInteger = _;
-  expect(JSSTInteger.is(_)).toBe(true);
+  expect(JSSTInteger_.is(_)).toBe(true);
 });
 
 test("JSSTInteger with enum", () => {
   const _: JSSTIntegerEnum = { type: "integer", enum: [22] };
   const __: JSSTInteger = _;
-  expect(JSSTInteger.is(_)).toBe(true);
+  expect(JSSTInteger_.is(_)).toBe(true);
 });
 
 test("JSSTNumber", () => {
   const _: JSSTSimpleNumber = { type: "number", maximum: 55.0 };
   const __: JSSTNumber = _;
-  expect(JSSTNumber.is(_)).toBe(true);
+  expect(JSSTNumber_.is(_)).toBe(true);
 });
 
 test("JSSTNumber with enum", () => {
   const _: JSSTNumberEnum = { type: "number", enum: [22.0] };
   const __: JSSTNumber = _;
-  expect(JSSTNumber.is(_)).toBe(true);
+  expect(JSSTNumber_.is(_)).toBe(true);
 });
 
 test("JSSTString", () => {
   const _: JSSTSimpleString = { type: "string" };
   const __: JSSTString = _;
-  expect(JSSTString.is(_)).toBe(true);
+  expect(JSSTString_.is(_)).toBe(true);
 });
 
 test("JSSTString with faker", () => {
   const _: JSSTSimpleString = { type: "string", faker: "address.city" };
   const __: JSSTString = _;
-  expect(JSSTString.is(_)).toBe(true);
+  expect(JSSTString_.is(_)).toBe(true);
 });
 
 test("JSSTString with enum", () => {
   const _: JSSTStringEnum = { type: "string", enum: ["foo"] };
   const __: JSSTString = _;
-  expect(JSSTString.is(_)).toBe(true);
+  expect(JSSTString_.is(_)).toBe(true);
 });
 
 test("JSSTArray as list", () => {
@@ -145,13 +152,23 @@ test("JSSTObject with custom property", () => {
     properties: { foo: { type: "string" }, bar: new Date() }
   };
   expect(JSSTObject_.is(_)).toBe(false);
-  expect(JSSTObject(DateType).is(_)).toBe(true);
+  expect(JSSTObject(DateType, t.any).is(_)).toBe(true);
+});
+
+test("JSSTObject with custom property and universal extension", () => {
+  const _: JSSTObject<Date, { unmock?: "rocks" }> = {
+    type: "object",
+    properties: { foo: { type: "string" }, bar: new Date() },
+    unmock: "rocks"
+  };
+  expect(JSSTObject_.is(_)).toBe(false);
+  expect(JSSTObject(DateType, t.any).is(_)).toBe(true);
 });
 
 test("JSSTTopLevel with custom property", () => {
   const _: JSSTGenericTopLevel<Date> = new Date();
   expect(JSSTGenericTopLevel_.is(_)).toBe(false);
-  expect(JSSTGenericTopLevel(DateType).is(_)).toBe(true);
+  expect(JSSTGenericTopLevel(DateType, t.any).is(_)).toBe(true);
 });
 
 test("JSSTOneOf", () => {

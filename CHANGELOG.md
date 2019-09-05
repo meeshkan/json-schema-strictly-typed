@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.11`
+
+Allows generic extension of all types.
+
 ## `v0.0.10`
 
 * Allows generic toplevel type.
