@@ -1,71 +1,84 @@
 import * as t from "io-ts";
-const _J = (input: unknown): input is JSSTEmpty =>
+const _J = <U>(input: unknown, u: t.Type<U, U>): input is JSSTEmpty<U> =>
   typeof input === "object" &&
   !Object.getPrototypeOf(input) &&
-  Object.getOwnPropertyNames(<object>input).length === 0;
-export const JSSTEmpty = new t.Type<JSSTEmpty, JSSTEmpty, unknown>(
-  "JSSTEmpty",
-  (input: unknown): input is JSSTEmpty => _J(input),
-  (input, context) =>
-    _J(input) ? t.success(input) : t.failure(input, context),
-  t.identity
-);
-export const JSSTList = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTList<T>, JSSTListOutput<T>> =>
+  Object.getOwnPropertyNames(<object>input).length === 0 &&
+  u.is(input);
+export const JSSTEmpty = <U = any>(u: t.Type<U, U>) =>
+  t.intersection([
+    new t.Type<JSSTEmpty<U>, JSSTEmpty<U>, unknown>(
+      "JSSTEmpty",
+      (input: unknown): input is JSSTEmpty<U> => _J(input, u),
+      (input, context) =>
+        _J(input, u) ? t.success(input) : t.failure(input, context),
+      t.identity
+    ),
+    u
+  ]);
+const JSSTEmpty_ = JSSTEmpty(t.any);
+
+export const JSSTList = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTList<T, U>, JSSTListOutput<T, U>> =>
   t.recursion("JSSTList", () =>
     t.intersection([
       JSSTProtoArray,
       t.intersection([
         t.type({
-          items: JSSTAnything(c)
+          items: JSSTAnything(c, u)
         }),
         t.partial({
           uniqueItems: t.boolean,
           minItems: t.number,
           maxItems: t.number
         })
-      ])
+      ]),
+      u
     ])
   );
-export const JSSTList_ = JSSTList(JSSTEmpty);
-export const JSSTAnything = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTAnything<T>, JSSTAnythingOutput<T>> =>
+export const JSSTList_ = JSSTList(JSSTEmpty_, t.any);
+export const JSSTAnything = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTAnything<T, U>, JSSTAnythingOutput<T, U>> =>
   t.recursion("JSSTAnything", () =>
     t.union([
-      JSSTEmpty,
-      JSSTConst,
-      JSSTReference,
-      JSSTNull,
-      JSSTBoolean,
-      JSSTInteger,
-      JSSTNumber,
-      JSSTString,
-      JSSTArray(c),
-      JSSTObject(c),
-      JSSTOneOf(c),
-      JSSTAnyOf(c),
-      JSSTAllOf(c),
-      JSSTNot(c),
+      JSSTEmpty(u),
+      JSSTConst(u),
+      JSSTReference(u),
+      JSSTNull(u),
+      JSSTBoolean(u),
+      JSSTInteger(u),
+      JSSTNumber(u),
+      JSSTString(u),
+      JSSTArray(c, u),
+      JSSTObject(c, u),
+      JSSTOneOf(c, u),
+      JSSTAnyOf(c, u),
+      JSSTAllOf(c, u),
+      JSSTNot(c, u),
       c
     ])
   );
-export const JSSTTuple = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTTuple<T>, JSSTTupleOutput<T>> =>
+export const JSSTTuple = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTTuple<T, U>, JSSTTupleOutput<T, U>> =>
   t.recursion("JSSTTuple", () =>
     t.intersection([
       JSSTProtoArray,
       t.type({
-        items: t.array(JSSTAnything(c))
-      })
+        items: t.array(JSSTAnything(c, u))
+      }),
+      u
     ])
   );
-export const JSSTTuple_ = JSSTTuple(JSSTEmpty);
-export const JSSTObject = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTObject<T>, JSSTObjectOutput<T>> =>
+export const JSSTTuple_ = JSSTTuple(JSSTEmpty_, t.any);
+export const JSSTObject = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTObject<T, U>, JSSTObjectOutput<T, U>> =>
   t.recursion("JSSTObject", () =>
     t.intersection([
       t.type({
@@ -74,49 +87,66 @@ export const JSSTObject = <T = JSSTEmpty>(
       t.partial({
         required: t.array(t.string),
         dependencies: t.record(t.string, t.array(t.string)),
-        additionalProperties: t.union([t.boolean, JSSTAnything(c)]),
-        patternProperties: t.record(t.string, JSSTAnything(c)),
-        properties: t.record(t.string, JSSTAnything(c))
-      })
+        additionalProperties: t.union([t.boolean, JSSTAnything(c, u)]),
+        patternProperties: t.record(t.string, JSSTAnything(c, u)),
+        properties: t.record(t.string, JSSTAnything(c, u))
+      }),
+      u
     ])
   );
-export const JSSTObject_ = JSSTObject(JSSTEmpty);
-export const JSSTOneOf = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTOneOf<T>, JSSTOneOfOutput<T>> =>
+export const JSSTObject_ = JSSTObject(JSSTEmpty_, t.any);
+export const JSSTOneOf = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTOneOf<T, U>, JSSTOneOfOutput<T, U>> =>
   t.recursion("JSSTOneOf", () =>
-    t.type({
-      oneOf: t.array(JSSTAnything(c))
-    })
+    t.intersection([
+      t.type({
+        oneOf: t.array(JSSTAnything(c, u))
+      }),
+      u
+    ])
   );
-export const JSSTOneOf_ = JSSTOneOf(JSSTEmpty);
-export const JSSTAnyOf = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTAnyOf<T>, JSSTAnyOfOutput<T>> =>
+export const JSSTOneOf_ = JSSTOneOf(JSSTEmpty_, t.any);
+export const JSSTAnyOf = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTAnyOf<T, U>, JSSTAnyOfOutput<T, U>> =>
   t.recursion("JSSTAnyOf", () =>
-    t.type({
-      anyOf: t.array(JSSTAnything(c))
-    })
+    t.intersection([
+      t.type({
+        anyOf: t.array(JSSTAnything(c, u))
+      }),
+      u
+    ])
   );
-export const JSSTAnyOf_ = JSSTAnyOf(JSSTEmpty);
-export const JSSTAllOf = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTAllOf<T>, JSSTAllOfOutput<T>> =>
+export const JSSTAnyOf_ = JSSTAnyOf(JSSTEmpty_, t.any);
+export const JSSTAllOf = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTAllOf<T, U>, JSSTAllOfOutput<T, U>> =>
   t.recursion("JSSTAllOf", () =>
-    t.type({
-      allOf: t.array(JSSTAnything(c))
-    })
+    t.intersection([
+      t.type({
+        allOf: t.array(JSSTAnything(c, u))
+      }),
+      u
+    ])
   );
-export const JSSTAllOf_ = JSSTAllOf(JSSTEmpty);
-export const JSSTNot = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSSTNot<T>, JSSTNotOutput<T>> =>
+export const JSSTAllOf_ = JSSTAllOf(JSSTEmpty_, t.any);
+export const JSSTNot = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSSTNot<T, U>, JSSTNotOutput<T, U>> =>
   t.recursion("JSSTNot", () =>
-    t.type({
-      not: JSSTAnything(c)
-    })
+    t.intersection([
+      t.type({
+        not: JSSTAnything(c, u)
+      }),
+      u
+    ])
   );
-export const JSSTNot_ = JSSTNot(JSSTEmpty);
+export const JSSTNot_ = JSSTNot(JSSTEmpty_, t.any);
 
 export const JSONPrimitive = t.union([t.number, t.boolean, t.string, t.null]);
 export const JSONValue: t.Type<JSONValue> = t.recursion("JSONValue", () =>
@@ -129,145 +159,189 @@ export const JSONArray: t.Type<JSONArray> = t.recursion("JSONArray", () =>
   t.array(JSONValue)
 );
 
-export const JSSTConst: t.Type<JSSTConst, JSSTConst> = t.recursion(
-  "JSSTConst",
-  () => t.type({ const: JSONValue })
-);
-export const JSSTReference = t.type({
-  $ref: t.string
-});
-export const JSSTNull = t.type({
-  type: t.literal("null")
-});
-export const JSSTBoolean = t.type({
-  type: t.literal("boolean")
-});
-export const JSSTProtoInteger = t.type({
-  type: t.literal("integer")
-});
-export const JSSTSimpleInteger = t.intersection([
-  JSSTProtoInteger,
-  t.partial({
-    multipleOf: t.number
-  })
-]);
-export const JSSTIntegerWithMinimum = t.intersection([
-  JSSTSimpleInteger,
+export const JSSTConst = <U>(
+  u: t.Type<U, U>
+): t.Type<JSSTConst<U>, JSSTConst<U>> =>
+  t.recursion("JSSTConst", () =>
+    t.intersection([t.type({ const: JSONValue }), u])
+  );
+export const JSSTReference = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
-      minimum: t.number
+      $ref: t.string
     }),
-    t.partial({
-      exclusiveMinimum: t.boolean
-    })
-  ])
-]);
-export const JSSTIntegerWithMaximum = t.intersection([
-  JSSTSimpleInteger,
+    u
+  ]);
+export const JSSTNull = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
-      maximum: t.number
+      type: t.literal("null")
     }),
-    t.partial({
-      exclusiveMaximum: t.boolean
-    })
-  ])
-]);
-export const JSSTIntegerWithBounds = t.intersection([
-  JSSTSimpleInteger,
+    u
+  ]);
+export const JSSTBoolean = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
-      minimum: t.number,
-      maximum: t.number
+      type: t.literal("boolean")
     }),
-    t.partial({
-      exclusiveMinimum: t.boolean,
-      exclusiveMaximum: t.boolean
-    })
-  ])
-]);
-export const JSSTIntegerWithNumericExclusiveMinimum = t.intersection([
-  JSSTSimpleInteger,
-  t.type({
-    exclusiveMinimum: t.number
-  })
-]);
-export const JSSTIntegerWithNumericExclusiveMinimumAndMaximum = t.intersection([
-  JSSTSimpleInteger,
+    u
+  ]);
+export const JSSTProtoInteger = <U>(u: t.Type<U, U>) =>
   t.intersection([
+    t.type({
+      type: t.literal("integer")
+    }),
+    u
+  ]);
+export const JSSTSimpleInteger = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTProtoInteger(u),
+    t.partial({
+      multipleOf: t.number
+    })
+  ]);
+export const JSSTIntegerWithMinimum = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
+    t.intersection([
+      t.type({
+        minimum: t.number
+      }),
+      t.partial({
+        exclusiveMinimum: t.boolean
+      })
+    ])
+  ]);
+export const JSSTIntegerWithMaximum = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
+    t.intersection([
+      t.type({
+        maximum: t.number
+      }),
+      t.partial({
+        exclusiveMaximum: t.boolean
+      })
+    ])
+  ]);
+export const JSSTIntegerWithBounds = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
+    t.intersection([
+      t.type({
+        minimum: t.number,
+        maximum: t.number
+      }),
+      t.partial({
+        exclusiveMinimum: t.boolean,
+        exclusiveMaximum: t.boolean
+      })
+    ])
+  ]);
+export const JSSTIntegerWithNumericExclusiveMinimum = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
+    t.type({
+      exclusiveMinimum: t.number
+    })
+  ]);
+export const JSSTIntegerWithNumericExclusiveMinimumAndMaximum = <U>(
+  u: t.Type<U, U>
+) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
+    t.intersection([
+      t.type({
+        exclusiveMinimum: t.number,
+        maximum: t.number
+      }),
+      t.partial({
+        exclusiveMaximum: t.boolean
+      })
+    ])
+  ]);
+export const JSSTIntegerWithNumericExclusiveMaximum = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
+    t.type({
+      exclusiveMaximum: t.number
+    })
+  ]);
+export const JSSTIntegerWithNumericExclusiveMaximumAndMinimum = <U>(
+  u: t.Type<U, U>
+) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
+    t.intersection([
+      t.type({
+        exclusiveMaximum: t.number,
+        minimum: t.number
+      }),
+      t.partial({
+        exclusiveMinimum: t.boolean
+      })
+    ])
+  ]);
+export const JSSTIntegerWithNumericExclusiveBounds = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTSimpleInteger(u),
     t.type({
       exclusiveMinimum: t.number,
-      maximum: t.number
-    }),
-    t.partial({
-      exclusiveMaximum: t.boolean
+      exclusiveMaximum: t.number
     })
-  ])
-]);
-export const JSSTIntegerWithNumericExclusiveMaximum = t.intersection([
-  JSSTSimpleInteger,
-  t.type({
-    exclusiveMaximum: t.number
-  })
-]);
-export const JSSTIntegerWithNumericExclusiveMaximumAndMinimum = t.intersection([
-  JSSTSimpleInteger,
+  ]);
+export const JSSTIntegerEnum = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTProtoInteger(u),
+    t.type({
+      enum: t.array(t.number)
+    })
+  ]);
+export const JSSTInteger = <U>(u: t.Type<U, U>) =>
+  t.union([
+    JSSTSimpleInteger(u),
+    JSSTIntegerWithMinimum(u),
+    JSSTIntegerWithMaximum(u),
+    JSSTIntegerWithBounds(u),
+    JSSTIntegerWithNumericExclusiveMinimum(u),
+    JSSTIntegerWithNumericExclusiveMinimumAndMaximum(u),
+    JSSTIntegerWithNumericExclusiveMaximum(u),
+    JSSTIntegerWithNumericExclusiveMaximumAndMinimum(u),
+    JSSTIntegerWithNumericExclusiveBounds(u),
+    JSSTIntegerEnum(u)
+  ]);
+export const JSSTProtoNumber = <U>(u: t.Type<U, U>) =>
   t.intersection([
     t.type({
-      exclusiveMaximum: t.number,
-      minimum: t.number
+      type: t.literal("number")
     }),
+    u
+  ]);
+export const JSSTSimpleNumber = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTProtoNumber(u),
     t.partial({
-      exclusiveMinimum: t.boolean
+      minimum: t.number,
+      maximum: t.number,
+      multipleOf: t.number
     })
-  ])
-]);
-export const JSSTIntegerWithNumericExclusiveBounds = t.intersection([
-  JSSTSimpleInteger,
-  t.type({
-    exclusiveMinimum: t.number,
-    exclusiveMaximum: t.number
-  })
-]);
-export const JSSTIntegerEnum = t.intersection([
-  JSSTProtoInteger,
-  t.type({
-    enum: t.array(t.number)
-  })
-]);
-export const JSSTInteger = t.union([
-  JSSTSimpleInteger,
-  JSSTIntegerWithMinimum,
-  JSSTIntegerWithMaximum,
-  JSSTIntegerWithBounds,
-  JSSTIntegerWithNumericExclusiveMinimum,
-  JSSTIntegerWithNumericExclusiveMinimumAndMaximum,
-  JSSTIntegerWithNumericExclusiveMaximum,
-  JSSTIntegerWithNumericExclusiveMaximumAndMinimum,
-  JSSTIntegerWithNumericExclusiveBounds,
-  JSSTIntegerEnum
-]);
-export const JSSTProtoNumber = t.type({
-  type: t.literal("number")
-});
-export const JSSTSimpleNumber = t.intersection([
-  JSSTProtoNumber,
-  t.partial({
-    minimum: t.number,
-    maximum: t.number,
-    multipleOf: t.number
-  })
-]);
-export const JSSTNumberEnum = t.intersection([
-  JSSTProtoNumber,
-  t.type({
-    enum: t.array(t.number)
-  })
-]);
-export const JSSTNumber = t.union([JSSTSimpleNumber, JSSTNumberEnum]);
-export const JSSTProtoString = t.type({
-  type: t.literal("string")
-});
+  ]);
+export const JSSTNumberEnum = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTProtoNumber(u),
+    t.type({
+      enum: t.array(t.number)
+    })
+  ]);
+export const JSSTNumber = <U>(u: t.Type<U, U>) =>
+  t.union([JSSTSimpleNumber(u), JSSTNumberEnum(u)]);
+export const JSSTProtoString = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    t.type({
+      type: t.literal("string")
+    }),
+    u
+  ]);
 export const JSSTFaker = t.union([
   t.literal("address.zipCode"),
   t.literal("address.city"),
@@ -419,307 +493,419 @@ export const JSSTFaker = t.union([
   t.literal("system.filePath"),
   t.literal("system.semver")
 ]);
-export const JSSTSimpleString = t.intersection([
-  JSSTProtoString,
-  t.partial({
-    faker: JSSTFaker
-  })
-]);
-export const JSSTRegex = t.intersection([
-  JSSTProtoString,
-  t.type({
-    pattern: t.string
-  })
-]);
-export const JSSTStringEnum = t.intersection([
-  JSSTProtoString,
-  t.type({
-    enum: t.array(t.string)
-  })
-]);
-export const JSSTString = t.union([
-  JSSTSimpleString,
-  JSSTRegex,
-  JSSTStringEnum
-]);
+export const JSSTSimpleString = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTProtoString(u),
+    t.partial({
+      faker: JSSTFaker
+    })
+  ]);
+export const JSSTRegex = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTProtoString(u),
+    t.type({
+      pattern: t.string
+    })
+  ]);
+export const JSSTStringEnum = <U>(u: t.Type<U, U>) =>
+  t.intersection([
+    JSSTProtoString(u),
+    t.type({
+      enum: t.array(t.string)
+    })
+  ]);
+export const JSSTString = <U>(u: t.Type<U, U>) =>
+  t.union([JSSTSimpleString(u), JSSTRegex(u), JSSTStringEnum(u)]);
 export const JSSTProtoArray = t.type({
   type: t.literal("array")
 });
-export const JSSTArray = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.union([JSSTList(c), JSSTTuple(c)]);
-export const JSSTArray_ = JSSTArray(JSSTEmpty);
-export const JSSTTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
+export const JSSTArray = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.union([JSSTList(c, u), JSSTTuple(c, u)]);
+export const JSSTArray_ = JSSTArray(JSSTEmpty_, t.any);
+export const JSSTTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) =>
   t.partial({
     $schema: t.string,
     $id: t.string,
-    definitions: t.record(t.string, JSSTAnything(c))
+    definitions: t.record(t.string, JSSTAnything(c, u))
   });
-export const JSSTTopLevel_ = JSSTTopLevel(JSSTEmpty);
-export const JSSTEmptyTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTEmpty, JSSTTopLevel(c)]);
-export const JSSTEmptyTopLevel_ = JSSTEmptyTopLevel(JSSTEmpty);
-export const JSSTConstTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTConst, JSSTTopLevel(c)]);
-export const JSSTConstTopLevel_ = JSSTConstTopLevel(JSSTEmpty);
-export const JSSTReferenceTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTReference, JSSTTopLevel(c)]);
-export const JSSTReferenceTopLevel_ = JSSTReferenceTopLevel(JSSTEmpty);
-export const JSSTNullTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTNull, JSSTTopLevel(c)]);
-export const JSSTNullTopLevel_ = JSSTNullTopLevel(JSSTEmpty);
-export const JSSTBooleanTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTBoolean, JSSTTopLevel(c)]);
-export const JSSTBooleanTopLevel_ = JSSTBooleanTopLevel(JSSTEmpty);
-export const JSSTIntegerTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTInteger, JSSTTopLevel(c)]);
-export const JSSTIntegerTopLevel_ = JSSTIntegerTopLevel(JSSTEmpty);
-export const JSSTSimpleIntegerTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTSimpleInteger, JSSTTopLevel(c)]);
-export const JSSTSimpleIntegerTopLevel_ = JSSTSimpleIntegerTopLevel(JSSTEmpty);
-export const JSSTIntegerWithMinimumTopLevel = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-) => t.intersection([JSSTIntegerWithMinimum, JSSTTopLevel(c)]);
+export const JSSTTopLevel_ = JSSTTopLevel(JSSTEmpty_, t.any);
+export const JSSTEmptyTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTEmpty(u), JSSTTopLevel(c, u)]);
+export const JSSTEmptyTopLevel_ = JSSTEmptyTopLevel(JSSTEmpty_, t.any);
+export const JSSTConstTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTConst(u), JSSTTopLevel(c, u)]);
+export const JSSTConstTopLevel_ = JSSTConstTopLevel(JSSTEmpty_, t.any);
+export const JSSTReferenceTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTReference(u), JSSTTopLevel(c, u)]);
+export const JSSTReferenceTopLevel_ = JSSTReferenceTopLevel(JSSTEmpty_, t.any);
+export const JSSTNullTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTNull(u), JSSTTopLevel(c, u)]);
+export const JSSTNullTopLevel_ = JSSTNullTopLevel(JSSTEmpty_, t.any);
+export const JSSTBooleanTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTBoolean(u), JSSTTopLevel(c, u)]);
+export const JSSTBooleanTopLevel_ = JSSTBooleanTopLevel(JSSTEmpty_, t.any);
+export const JSSTIntegerTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTInteger(u), JSSTTopLevel(c, u)]);
+export const JSSTIntegerTopLevel_ = JSSTIntegerTopLevel(JSSTEmpty_, t.any);
+export const JSSTSimpleIntegerTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTSimpleInteger(u), JSSTTopLevel(c, u)]);
+export const JSSTSimpleIntegerTopLevel_ = JSSTSimpleIntegerTopLevel(
+  JSSTEmpty_,
+  t.any
+);
+export const JSSTIntegerWithMinimumTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTIntegerWithMinimum(u), JSSTTopLevel(c, u)]);
 export const JSSTIntegerWithMinimumTopLevelTopLevel_ = JSSTIntegerWithMinimumTopLevel(
-  JSSTEmpty
+  JSSTEmpty_,
+  t.any
 );
-export const JSSTIntegerWithMaximumTopLevel = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-) => t.intersection([JSSTIntegerWithMaximum, JSSTTopLevel(c)]);
+export const JSSTIntegerWithMaximumTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTIntegerWithMaximum(u), JSSTTopLevel(c, u)]);
 export const JSSTIntegerWithMaximumTopLevel_ = JSSTIntegerWithMaximumTopLevel(
-  JSSTEmpty
+  JSSTEmpty_,
+  t.any
 );
-export const JSSTIntegerWithBoundsTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTIntegerWithBounds, JSSTTopLevel(c)]);
+export const JSSTIntegerWithBoundsTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTIntegerWithBounds(u), JSSTTopLevel(c, u)]);
 export const JSSTIntegerWithBoundsTopLevel_ = JSSTIntegerWithBoundsTopLevel(
-  JSSTEmpty
+  JSSTEmpty_,
+  t.any
 );
-export const JSSTIntegerWithNumericExclusiveMinimumTopLevel = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-) => t.intersection([JSSTIntegerWithNumericExclusiveMinimum, JSSTTopLevel(c)]);
+export const JSSTIntegerWithNumericExclusiveMinimumTopLevel = <
+  T = JSSTEmpty<any>,
+  U = any
+>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) =>
+  t.intersection([
+    JSSTIntegerWithNumericExclusiveMinimum(u),
+    JSSTTopLevel(c, u)
+  ]);
 export const JSSTIntegerWithNumericExclusiveMinimumTopLevel_ = JSSTIntegerWithNumericExclusiveMinimumTopLevel(
-  JSSTEmpty
+  JSSTEmpty_,
+  t.any
 );
 export const JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel = <
-  T = JSSTEmpty
+  T = JSSTEmpty<any>,
+  U = any
 >(
-  c: t.Type<T, T>
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
 ) =>
   t.intersection([
-    JSSTIntegerWithNumericExclusiveMinimumAndMaximum,
-    JSSTTopLevel(c)
+    JSSTIntegerWithNumericExclusiveMinimumAndMaximum(u),
+    JSSTTopLevel(c, u)
   ]);
 export const JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel_ = JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel(
-  JSSTEmpty
+  JSSTEmpty_,
+  t.any
 );
-export const JSSTIntegerWithNumericExclusiveMaximumTopLevel = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-) => t.intersection([JSSTIntegerWithNumericExclusiveMaximum, JSSTTopLevel(c)]);
-export const JSSTIntegerWithNumericExclusiveMaximumTopLevel_ = JSSTIntegerWithNumericExclusiveMaximumTopLevel(
-  JSSTEmpty
-);
-export const JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel = <
-  T = JSSTEmpty
+export const JSSTIntegerWithNumericExclusiveMaximumTopLevel = <
+  T = JSSTEmpty<any>,
+  U = any
 >(
-  c: t.Type<T, T>
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
 ) =>
   t.intersection([
-    JSSTIntegerWithNumericExclusiveMaximumAndMinimum,
-    JSSTTopLevel(c)
+    JSSTIntegerWithNumericExclusiveMaximum(u),
+    JSSTTopLevel(c, u)
+  ]);
+export const JSSTIntegerWithNumericExclusiveMaximumTopLevel_ = JSSTIntegerWithNumericExclusiveMaximumTopLevel(
+  JSSTEmpty_,
+  t.any
+);
+export const JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel = <
+  T = JSSTEmpty<any>,
+  U = any
+>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) =>
+  t.intersection([
+    JSSTIntegerWithNumericExclusiveMaximumAndMinimum(u),
+    JSSTTopLevel(c, u)
   ]);
 export const JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel_ = JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel(
-  JSSTEmpty
+  JSSTEmpty_,
+  t.any
 );
-export const JSSTIntegerWithNumericExclusiveBoundsTopLevel = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-) => t.intersection([JSSTIntegerWithNumericExclusiveBounds, JSSTTopLevel(c)]);
+export const JSSTIntegerWithNumericExclusiveBoundsTopLevel = <
+  T = JSSTEmpty<any>,
+  U = any
+>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) =>
+  t.intersection([
+    JSSTIntegerWithNumericExclusiveBounds(u),
+    JSSTTopLevel(c, u)
+  ]);
 export const JSSTIntegerWithNumericExclusiveBoundsTopLevel_ = JSSTIntegerWithNumericExclusiveBoundsTopLevel(
-  JSSTEmpty
+  JSSTEmpty_,
+  t.any
 );
-export const JSSTIntegerEnumTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTIntegerEnum, JSSTTopLevel(c)]);
-export const JSSTIntegerEnumTopLevel_ = JSSTIntegerEnumTopLevel(JSSTEmpty);
-export const JSSTNumberTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTNumber, JSSTTopLevel(c)]);
-export const JSSTNumberTopLevel_ = JSSTNumberTopLevel(JSSTEmpty);
-export const JSSTSimpleNumberTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTSimpleNumber, JSSTTopLevel(c)]);
-export const JSSTSimpleNumberTopLevel_ = JSSTSimpleNumberTopLevel(JSSTEmpty);
-export const JSSTNumberEnumTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTNumberEnum, JSSTTopLevel(c)]);
-export const JSSTNumberEnumTopLevel_ = JSSTNumberEnumTopLevel(JSSTEmpty);
-export const JSSTAnyOfTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTAnyOf(c), JSSTTopLevel(c)]);
-export const JSSTAnyOfTopLevel_ = JSSTAnyOfTopLevel(JSSTEmpty);
-export const JSSTAllOfTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTAllOf(c), JSSTTopLevel(c)]);
-export const JSSTAllOfTopLevel_ = JSSTAllOfTopLevel(JSSTEmpty);
-export const JSSTNotTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTNot(c), JSSTTopLevel(c)]);
-export const JSSTNotTopLevel_ = JSSTNotTopLevel(JSSTEmpty);
-export const JSSTOneOfTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTOneOf(c), JSSTTopLevel(c)]);
-export const JSSTOneOfTopLevel_ = JSSTOneOfTopLevel(JSSTEmpty);
-export const JSSTStringTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTString, JSSTTopLevel(c)]);
-export const JSSTStringTopLevel_ = JSSTStringTopLevel(JSSTEmpty);
-export const JSSTSimpleStringTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTSimpleString, JSSTTopLevel(c)]);
-export const JSSTSimpleStringTopLevel_ = JSSTSimpleStringTopLevel(JSSTEmpty);
-export const JSSTRegexTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTRegex, JSSTTopLevel(c)]);
-export const JSSTRegexTopLevel_ = JSSTRegexTopLevel(JSSTEmpty);
-export const JSSTStringEnumTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTStringEnum, JSSTTopLevel(c)]);
-export const JSSTStringEnumTopLevel_ = JSSTStringEnumTopLevel(JSSTEmpty);
-export const JSSTArrayTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTArray(c), JSSTTopLevel(c)]);
-export const JSSTArrayTopLevel_ = JSSTArrayTopLevel(JSSTEmpty);
-export const JSSTListTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTList(c), JSSTTopLevel(c)]);
-export const JSSTListTopLevel_ = JSSTListTopLevel(JSSTEmpty);
-export const JSSTTupleTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTTuple(c), JSSTTopLevel(c)]);
-export const JSSTTupleTopLevel_ = JSSTTupleTopLevel(JSSTEmpty);
-export const JSSTObjectTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([JSSTObject(c), JSSTTopLevel(c)]);
-export const JSSTObjectTopLevel_ = JSSTObjectTopLevel(JSSTEmpty);
-export const JSSTGenericTopLevel = <T = JSSTEmpty>(c: t.Type<T, T>) =>
-  t.intersection([c, JSSTTopLevel(c)]);
-export const JSSTGenericTopLevel_ = JSSTGenericTopLevel(JSSTEmpty);
-export const JSONSchemaObject = <T = JSSTEmpty>(
-  c: t.Type<T, T>
-): t.Type<JSONSchemaObject<T>> =>
+export const JSSTIntegerEnumTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTIntegerEnum(u), JSSTTopLevel(c, u)]);
+export const JSSTIntegerEnumTopLevel_ = JSSTIntegerEnumTopLevel(
+  JSSTEmpty_,
+  t.any
+);
+export const JSSTNumberTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTNumber(u), JSSTTopLevel(c, u)]);
+export const JSSTNumberTopLevel_ = JSSTNumberTopLevel(JSSTEmpty_, t.any);
+export const JSSTSimpleNumberTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTSimpleNumber(u), JSSTTopLevel(c, u)]);
+export const JSSTSimpleNumberTopLevel_ = JSSTSimpleNumberTopLevel(
+  JSSTEmpty_,
+  t.any
+);
+export const JSSTNumberEnumTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTNumberEnum(u), JSSTTopLevel(c, u)]);
+export const JSSTNumberEnumTopLevel_ = JSSTNumberEnumTopLevel(
+  JSSTEmpty_,
+  t.any
+);
+export const JSSTAnyOfTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTAnyOf(c, u), JSSTTopLevel(c, u)]);
+export const JSSTAnyOfTopLevel_ = JSSTAnyOfTopLevel(JSSTEmpty_, t.any);
+export const JSSTAllOfTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTAllOf(c, u), JSSTTopLevel(c, u)]);
+export const JSSTAllOfTopLevel_ = JSSTAllOfTopLevel(JSSTEmpty_, t.any);
+export const JSSTNotTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTNot(c, u), JSSTTopLevel(c, u)]);
+export const JSSTNotTopLevel_ = JSSTNotTopLevel(JSSTEmpty_, t.any);
+export const JSSTOneOfTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTOneOf(c, u), JSSTTopLevel(c, u)]);
+export const JSSTOneOfTopLevel_ = JSSTOneOfTopLevel(JSSTEmpty_, t.any);
+export const JSSTStringTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTString(u), JSSTTopLevel(c, u)]);
+export const JSSTStringTopLevel_ = JSSTStringTopLevel(JSSTEmpty_, t.any);
+export const JSSTSimpleStringTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTSimpleString(u), JSSTTopLevel(c, u)]);
+export const JSSTSimpleStringTopLevel_ = JSSTSimpleStringTopLevel(
+  JSSTEmpty_,
+  t.any
+);
+export const JSSTRegexTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTRegex(u), JSSTTopLevel(c, u)]);
+export const JSSTRegexTopLevel_ = JSSTRegexTopLevel(JSSTEmpty_, t.any);
+export const JSSTStringEnumTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTStringEnum(u), JSSTTopLevel(c, u)]);
+export const JSSTStringEnumTopLevel_ = JSSTStringEnumTopLevel(
+  JSSTEmpty_,
+  t.any
+);
+export const JSSTArrayTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTArray(c, u), JSSTTopLevel(c, u)]);
+export const JSSTArrayTopLevel_ = JSSTArrayTopLevel(JSSTEmpty_, t.any);
+export const JSSTListTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTList(c, u), JSSTTopLevel(c, u)]);
+export const JSSTListTopLevel_ = JSSTListTopLevel(JSSTEmpty_, t.any);
+export const JSSTTupleTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTTuple(c, u), JSSTTopLevel(c, u)]);
+export const JSSTTupleTopLevel_ = JSSTTupleTopLevel(JSSTEmpty_, t.any);
+export const JSSTObjectTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([JSSTObject(c, u), JSSTTopLevel(c, u)]);
+export const JSSTObjectTopLevel_ = JSSTObjectTopLevel(JSSTEmpty_, t.any);
+export const JSSTGenericTopLevel = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+) => t.intersection([c, JSSTTopLevel(c, u)]);
+export const JSSTGenericTopLevel_ = JSSTGenericTopLevel(JSSTEmpty_, t.any);
+export const JSONSchemaObject = <T = JSSTEmpty<any>, U = any>(
+  c: t.Type<T, T>,
+  u: t.Type<U, U>
+): t.Type<JSONSchemaObject<T, U>> =>
   t.recursion("JSONSchemaObject", () =>
     t.union([
-      JSSTEmptyTopLevel(c),
-      JSSTConstTopLevel(c),
-      JSSTReferenceTopLevel(c),
-      JSSTNullTopLevel(c),
-      JSSTBooleanTopLevel(c),
-      JSSTIntegerTopLevel(c),
-      JSSTSimpleIntegerTopLevel(c),
-      JSSTIntegerWithMinimumTopLevel(c),
-      JSSTIntegerWithMaximumTopLevel(c),
-      JSSTIntegerWithBoundsTopLevel(c),
-      JSSTIntegerWithNumericExclusiveMinimumTopLevel(c),
-      JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel(c),
-      JSSTIntegerWithNumericExclusiveMaximumTopLevel(c),
-      JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel(c),
-      JSSTIntegerWithNumericExclusiveBoundsTopLevel(c),
-      JSSTIntegerEnumTopLevel(c),
-      JSSTNumberTopLevel(c),
-      JSSTSimpleNumberTopLevel(c),
-      JSSTNumberEnumTopLevel(c),
-      JSSTAnyOfTopLevel(c),
-      JSSTAllOfTopLevel(c),
-      JSSTNotTopLevel(c),
-      JSSTOneOfTopLevel(c),
-      JSSTStringTopLevel(c),
-      JSSTSimpleStringTopLevel(c),
-      JSSTRegexTopLevel(c),
-      JSSTStringEnumTopLevel(c),
-      JSSTArrayTopLevel(c),
-      JSSTListTopLevel(c),
-      JSSTTupleTopLevel(c),
-      JSSTObjectTopLevel(c),
-      JSSTGenericTopLevel(c)
+      JSSTEmptyTopLevel(c, u),
+      JSSTConstTopLevel(c, u),
+      JSSTReferenceTopLevel(c, u),
+      JSSTNullTopLevel(c, u),
+      JSSTBooleanTopLevel(c, u),
+      JSSTIntegerTopLevel(c, u),
+      JSSTSimpleIntegerTopLevel(c, u),
+      JSSTIntegerWithMinimumTopLevel(c, u),
+      JSSTIntegerWithMaximumTopLevel(c, u),
+      JSSTIntegerWithBoundsTopLevel(c, u),
+      JSSTIntegerWithNumericExclusiveMinimumTopLevel(c, u),
+      JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel(c, u),
+      JSSTIntegerWithNumericExclusiveMaximumTopLevel(c, u),
+      JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel(c, u),
+      JSSTIntegerWithNumericExclusiveBoundsTopLevel(c, u),
+      JSSTIntegerEnumTopLevel(c, u),
+      JSSTNumberTopLevel(c, u),
+      JSSTSimpleNumberTopLevel(c, u),
+      JSSTNumberEnumTopLevel(c, u),
+      JSSTAnyOfTopLevel(c, u),
+      JSSTAllOfTopLevel(c, u),
+      JSSTNotTopLevel(c, u),
+      JSSTOneOfTopLevel(c, u),
+      JSSTStringTopLevel(c, u),
+      JSSTSimpleStringTopLevel(c, u),
+      JSSTRegexTopLevel(c, u),
+      JSSTStringEnumTopLevel(c, u),
+      JSSTArrayTopLevel(c, u),
+      JSSTListTopLevel(c, u),
+      JSSTTupleTopLevel(c, u),
+      JSSTObjectTopLevel(c, u),
+      JSSTGenericTopLevel(c, u)
     ])
   );
 
-export type JSSTList<T = JSSTEmpty> = JSSTProtoArray & {
-  items: JSSTAnything<T>;
+export type JSSTList<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
+  items: JSSTAnything<T, U>;
+  uniqueItems?: boolean;
+  minItems?: number;
+  maxItems?: number;
+} & U;
+type JSSTListOutput<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
+  items: JSSTAnythingOutput<T, U>;
   uniqueItems?: boolean;
   minItems?: number;
   maxItems?: number;
 };
-type JSSTListOutput<T = JSSTEmpty> = JSSTProtoArray & {
-  items: JSSTAnythingOutput<T>;
-  uniqueItems?: boolean;
-  minItems?: number;
-  maxItems?: number;
-};
-export type JSSTAnything<T = JSSTEmpty> =
-  | JSSTEmpty
-  | t.TypeOf<typeof JSSTConst>
-  | t.TypeOf<typeof JSSTReference>
-  | t.TypeOf<typeof JSSTNull>
-  | t.TypeOf<typeof JSSTBoolean>
-  | t.TypeOf<typeof JSSTInteger>
-  | t.TypeOf<typeof JSSTNumber>
-  | t.TypeOf<typeof JSSTString>
-  | JSSTArray<T>
-  | JSSTObject<T>
-  | JSSTOneOf<T>
-  | JSSTAnyOf<T>
-  | JSSTAllOf<T>
-  | JSSTNot<T>
+export type JSSTAnything<T = JSSTEmpty<any>, U = any> =
+  | JSSTEmpty<U>
+  | JSSTConst<U>
+  | JSSTReference<U>
+  | JSSTNull<U>
+  | JSSTBoolean<U>
+  | JSSTInteger<U>
+  | JSSTNumber<U>
+  | JSSTString<U>
+  | JSSTArray<T, U>
+  | JSSTObject<T, U>
+  | JSSTOneOf<T, U>
+  | JSSTAnyOf<T, U>
+  | JSSTAllOf<T, U>
+  | JSSTNot<T, U>
   | T;
-type JSSTAnythingOutput<T = JSSTEmpty> =
-  | JSSTEmpty
-  | t.OutputOf<typeof JSSTConst>
-  | t.OutputOf<typeof JSSTReference>
-  | t.OutputOf<typeof JSSTNull>
-  | t.OutputOf<typeof JSSTBoolean>
-  | t.OutputOf<typeof JSSTInteger>
-  | t.OutputOf<typeof JSSTNumber>
-  | t.OutputOf<typeof JSSTString>
-  | JSSTArrayOutput<T>
-  | JSSTObjectOutput<T>
-  | JSSTOneOfOutput<T>
-  | JSSTAnyOfOutput<T>
-  | JSSTAllOfOutput<T>
-  | JSSTNotOutput<T>
+type JSSTAnythingOutput<T = JSSTEmpty<any>, U = any> =
+  | JSSTEmpty<U>
+  | JSSTConst<U>
+  | JSSTReference<U>
+  | JSSTNull<U>
+  | JSSTBoolean<U>
+  | JSSTInteger<U>
+  | JSSTNumber<U>
+  | JSSTString<U>
+  | JSSTArrayOutput<T, U>
+  | JSSTObjectOutput<T, U>
+  | JSSTOneOfOutput<T, U>
+  | JSSTAnyOfOutput<T, U>
+  | JSSTAllOfOutput<T, U>
+  | JSSTNotOutput<T, U>
   | T;
-export type JSSTTuple<T = JSSTEmpty> = JSSTProtoArray & {
-  items: Array<JSSTAnything<T>>;
-};
-type JSSTTupleOutput<T = JSSTEmpty> = JSSTProtoArray & {
-  items: Array<JSSTAnythingOutput<T>>;
-};
-export interface JSSTObject<T = JSSTEmpty> {
+export type JSSTTuple<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
+  items: Array<JSSTAnything<T, U>>;
+} & U;
+type JSSTTupleOutput<T = JSSTEmpty<any>, U = any> = JSSTProtoArray & {
+  items: Array<JSSTAnythingOutput<T, U>>;
+} & U;
+export type JSSTObject<T = JSSTEmpty<any>, U = any> = {
   type: "object";
   required?: Array<string>;
   dependencies?: Record<string, Array<string>>;
-  additionalProperties?: boolean | JSSTAnything<T>;
-  patternProperties?: Record<string, JSSTAnything<T>>;
-  properties?: Record<string, JSSTAnything<T>>;
-}
-interface JSSTObjectOutput<T = JSSTEmpty> {
+  additionalProperties?: boolean | JSSTAnything<T, U>;
+  patternProperties?: Record<string, JSSTAnything<T, U>>;
+  properties?: Record<string, JSSTAnything<T, U>>;
+} & U;
+type JSSTObjectOutput<T = JSSTEmpty<any>, U = any> = {
   type: "object";
   required?: Array<string>;
   dependencies?: Record<string, Array<string>>;
-  additionalProperties?: boolean | JSSTAnythingOutput<T>;
-  patternProperties?: Record<string, JSSTAnythingOutput<T>>;
-  properties?: Record<string, JSSTAnythingOutput<T>>;
-}
-export interface JSSTOneOf<T = JSSTEmpty> {
-  oneOf: Array<JSSTAnything<T>>;
-}
-interface JSSTOneOfOutput<T = JSSTEmpty> {
-  oneOf: Array<JSSTAnythingOutput<T>>;
-}
-export interface JSSTAnyOf<T = JSSTEmpty> {
-  anyOf: Array<JSSTAnything<T>>;
-}
-interface JSSTAnyOfOutput<T = JSSTEmpty> {
-  anyOf: Array<JSSTAnythingOutput<T>>;
-}
-export interface JSSTAllOf<T = JSSTEmpty> {
-  allOf: Array<JSSTAnything<T>>;
-}
-interface JSSTAllOfOutput<T = JSSTEmpty> {
-  allOf: Array<JSSTAnythingOutput<T>>;
-}
-export interface JSSTNot<T = JSSTEmpty> {
-  not: JSSTAnything<T>;
-}
-interface JSSTNotOutput<T = JSSTEmpty> {
-  not: JSSTAnythingOutput<T>;
-}
-export interface JSSTEmpty {
+  additionalProperties?: boolean | JSSTAnythingOutput<T, U>;
+  patternProperties?: Record<string, JSSTAnythingOutput<T, U>>;
+  properties?: Record<string, JSSTAnythingOutput<T, U>>;
+} & U;
+export type JSSTOneOf<T = JSSTEmpty<any>, U = any> = {
+  oneOf: Array<JSSTAnything<T, U>>;
+} & U;
+type JSSTOneOfOutput<T = JSSTEmpty<any>, U = any> = {
+  oneOf: Array<JSSTAnythingOutput<T, U>>;
+} & U;
+export type JSSTAnyOf<T = JSSTEmpty<any>, U = any> = {
+  anyOf: Array<JSSTAnything<T, U>>;
+} & U;
+type JSSTAnyOfOutput<T = JSSTEmpty<any>, U = any> = {
+  anyOf: Array<JSSTAnythingOutput<T, U>>;
+} & U;
+export type JSSTAllOf<T = JSSTEmpty<any>, U = any> = {
+  allOf: Array<JSSTAnything<T, U>>;
+} & U;
+type JSSTAllOfOutput<T = JSSTEmpty<any>, U = any> = {
+  allOf: Array<JSSTAnythingOutput<T, U>>;
+} & U;
+export type JSSTNot<T = JSSTEmpty<any>, U = any> = {
+  not: JSSTAnything<T, U>;
+} & U;
+type JSSTNotOutput<T = JSSTEmpty<any>, U = any> = {
+  not: JSSTAnythingOutput<T, U>;
+} & U;
+export type JSSTEmpty<U> = {
   [k: string]: never;
   [z: number]: never;
-}
+} & U;
 
 export type JSONPrimitive = number | boolean | string | null;
 export type JSONValue = JSONPrimitive | JSONArray | JSONObject;
@@ -728,99 +914,91 @@ export type JSONObject = {
 };
 export interface JSONArray extends Array<JSONValue> {}
 
-export interface JSSTConst {
+export type JSSTConst<U> = {
   const: JSONValue;
-}
-export interface JSSTReference {
+} & U;
+export type JSSTReference<U> = {
   $ref: string;
-}
-export interface JSSTNull {
+} & U;
+export type JSSTNull<U> = {
   type: "null";
-}
-export interface JSSTBoolean {
+} & U;
+export type JSSTBoolean<U> = {
   type: "boolean";
-}
-export interface JSSTProtoInteger {
+} & U;
+export type JSSTProtoInteger<U> = {
   type: "integer";
-}
-export type JSSTSimpleInteger = t.TypeOf<typeof JSSTProtoInteger> & {
+} & U;
+export type JSSTSimpleInteger<U> = JSSTProtoInteger<U> & {
   multipleOf?: number;
 };
-export type JSSTIntegerWithMinimum = t.TypeOf<typeof JSSTSimpleInteger> & {
+export type JSSTIntegerWithMinimum<U> = JSSTSimpleInteger<U> & {
   minimum: number;
   exclusiveMinimum?: boolean;
 };
-export type JSSTIntegerWithMaximum = t.TypeOf<typeof JSSTSimpleInteger> & {
+export type JSSTIntegerWithMaximum<U> = JSSTSimpleInteger<U> & {
   maximum: number;
   exclusiveMaximum?: boolean;
 };
-export type JSSTIntegerWithBounds = t.TypeOf<typeof JSSTSimpleInteger> & {
+export type JSSTIntegerWithBounds<U> = JSSTSimpleInteger<U> & {
   minimum: number;
   maximum: number;
   exclusiveMinimum?: boolean;
   exclusiveMaximum?: boolean;
 };
-export type JSSTIntegerWithNumericExclusiveMinimum = t.TypeOf<
-  typeof JSSTSimpleInteger
-> & {
+export type JSSTIntegerWithNumericExclusiveMinimum<U> = JSSTSimpleInteger<U> & {
   exclusiveMinimum: number;
 };
-export type JSSTIntegerWithNumericExclusiveMinimumAndMaximum = t.TypeOf<
-  typeof JSSTSimpleInteger
-> & {
+export type JSSTIntegerWithNumericExclusiveMinimumAndMaximum<
+  U
+> = JSSTSimpleInteger<U> & {
   exclusiveMinimum: number;
   maximum: number;
   exclusiveMaximum?: boolean;
 };
-export type JSSTIntegerWithNumericExclusiveMaximum = t.TypeOf<
-  typeof JSSTSimpleInteger
-> & {
+export type JSSTIntegerWithNumericExclusiveMaximum<U> = JSSTSimpleInteger<U> & {
   exclusiveMaximum: number;
 };
-export type JSSTIntegerWithNumericExclusiveMaximumAndMinimum = t.TypeOf<
-  typeof JSSTSimpleInteger
-> & {
+export type JSSTIntegerWithNumericExclusiveMaximumAndMinimum<
+  U
+> = JSSTSimpleInteger<U> & {
   exclusiveMaximum: number;
   minimum: number;
   exclusiveMinimum?: boolean;
 };
-export type JSSTIntegerWithNumericExclusiveBounds = t.TypeOf<
-  typeof JSSTSimpleInteger
-> & {
+export type JSSTIntegerWithNumericExclusiveBounds<U> = JSSTSimpleInteger<U> & {
   exclusiveMinimum: number;
   exclusiveMaximum: number;
 };
-export type JSSTIntegerEnum = t.TypeOf<typeof JSSTProtoInteger> & {
+export type JSSTIntegerEnum<U> = JSSTProtoInteger<U> & {
   enum: Array<number>;
 };
-export type JSSTInteger =
-  | t.TypeOf<typeof JSSTSimpleInteger>
-  | t.TypeOf<typeof JSSTIntegerWithMinimum>
-  | t.TypeOf<typeof JSSTIntegerWithMaximum>
-  | t.TypeOf<typeof JSSTIntegerWithBounds>
-  | t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMinimum>
-  | t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMinimumAndMaximum>
-  | t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMaximum>
-  | t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMaximumAndMinimum>
-  | t.TypeOf<typeof JSSTIntegerWithNumericExclusiveBounds>
-  | t.TypeOf<typeof JSSTIntegerEnum>;
-export interface JSSTProtoNumber {
+export type JSSTInteger<U> =
+  | JSSTSimpleInteger<U>
+  | JSSTIntegerWithMinimum<U>
+  | JSSTIntegerWithMaximum<U>
+  | JSSTIntegerWithBounds<U>
+  | JSSTIntegerWithNumericExclusiveMinimum<U>
+  | JSSTIntegerWithNumericExclusiveMinimumAndMaximum<U>
+  | JSSTIntegerWithNumericExclusiveMaximum<U>
+  | JSSTIntegerWithNumericExclusiveMaximumAndMinimum<U>
+  | JSSTIntegerWithNumericExclusiveBounds<U>
+  | JSSTIntegerEnum<U>;
+export type JSSTProtoNumber<U> = {
   type: "number";
-}
-export type JSSTSimpleNumber = t.TypeOf<typeof JSSTProtoNumber> & {
+} & U;
+export type JSSTSimpleNumber<U> = JSSTProtoNumber<U> & {
   minimum?: number;
   maximum?: number;
   multipleOf?: number;
 };
-export type JSSTNumberEnum = t.TypeOf<typeof JSSTProtoNumber> & {
+export type JSSTNumberEnum<U> = JSSTProtoNumber<U> & {
   enum: Array<number>;
 };
-export type JSSTNumber =
-  | t.TypeOf<typeof JSSTSimpleNumber>
-  | t.TypeOf<typeof JSSTNumberEnum>;
-export interface JSSTProtoString {
+export type JSSTNumber<U> = JSSTSimpleNumber<U> | JSSTNumberEnum<U>;
+export type JSSTProtoString<U> = {
   type: "string";
-}
+} & U;
 export type JSSTFaker =
   | "address.zipCode"
   | "address.city"
@@ -971,142 +1149,157 @@ export type JSSTFaker =
   | "system.directoryPath"
   | "system.filePath"
   | "system.semver";
-export type JSSTSimpleString = t.TypeOf<typeof JSSTProtoString> & {
+export type JSSTSimpleString<U> = JSSTProtoString<U> & {
   faker?: JSSTFaker;
 };
-export type JSSTRegex = t.TypeOf<typeof JSSTProtoString> & {
+export type JSSTRegex<U> = JSSTProtoString<U> & {
   pattern: string;
 };
-export type JSSTStringEnum = t.TypeOf<typeof JSSTProtoString> & {
+export type JSSTStringEnum<U> = JSSTProtoString<U> & {
   enum: Array<string>;
 };
-export type JSSTString =
-  | t.TypeOf<typeof JSSTSimpleString>
-  | t.TypeOf<typeof JSSTRegex>
-  | t.TypeOf<typeof JSSTStringEnum>;
+export type JSSTString<U> =
+  | JSSTSimpleString<U>
+  | JSSTRegex<U>
+  | JSSTStringEnum<U>;
 export interface JSSTProtoArray {
   type: "array";
 }
-export type JSSTArray<T = JSSTEmpty> = JSSTList<T> | JSSTTuple<T>;
-export type JSSTArrayOutput<T = JSSTEmpty> =
-  | JSSTListOutput<T>
-  | JSSTTupleOutput<T>;
-export interface JSSTTopLevel<T = JSSTEmpty> {
+export type JSSTArray<T = JSSTEmpty<any>, U = any> =
+  | JSSTList<T, U>
+  | JSSTTuple<T, U>;
+export type JSSTArrayOutput<T = JSSTEmpty<any>, U = any> =
+  | JSSTListOutput<T, U>
+  | JSSTTupleOutput<T, U>;
+export interface JSSTTopLevel<T = JSSTEmpty<any>, U = any> {
   $schema?: string;
   $id?: string;
-  definitions?: Record<string, JSSTAnything<T>>;
+  definitions?: Record<string, JSSTAnything<T, U>>;
 }
-export type JSSTEmptyTopLevel<T = JSSTEmpty> = JSSTEmpty & JSSTTopLevel<T>;
-export type JSSTConstTopLevel<T = JSSTEmpty> = t.TypeOf<typeof JSSTConst> &
-  JSSTTopLevel<T>;
-export type JSSTReferenceTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTReference
+export type JSSTEmptyTopLevel<T = JSSTEmpty<any>, U = any> = JSSTEmpty<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTConstTopLevel<T = JSSTEmpty<any>, U = any> = JSSTConst<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTReferenceTopLevel<T = JSSTEmpty<any>, U = any> = JSSTReference<
+  U
 > &
-  JSSTTopLevel<T>;
-export type JSSTNullTopLevel<T = JSSTEmpty> = t.TypeOf<typeof JSSTNull> &
-  JSSTTopLevel<T>;
-export type JSSTBooleanTopLevel<T = JSSTEmpty> = t.TypeOf<typeof JSSTBoolean> &
-  JSSTTopLevel<T>;
-export type JSSTIntegerTopLevel<T = JSSTEmpty> = t.TypeOf<typeof JSSTInteger> &
-  JSSTTopLevel<T>;
-export type JSSTSimpleIntegerTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTSimpleInteger
-> &
-  JSSTTopLevel<T>;
-export type JSSTIntegerWithMinimumTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTIntegerWithMinimum
-> &
-  JSSTTopLevel<T>;
-export type JSSTIntegerWithMaximumTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTIntegerWithMaximum
-> &
-  JSSTTopLevel<T>;
-export type JSSTIntegerWithBoundsTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTIntegerWithBounds
-> &
-  JSSTTopLevel<T>;
+  JSSTTopLevel<T, U>;
+export type JSSTNullTopLevel<T = JSSTEmpty<any>, U = any> = JSSTNull<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTBooleanTopLevel<T = JSSTEmpty<any>, U = any> = JSSTBoolean<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTIntegerTopLevel<T = JSSTEmpty<any>, U = any> = JSSTInteger<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTSimpleIntegerTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTSimpleInteger<U> & JSSTTopLevel<T, U>;
+export type JSSTIntegerWithMinimumTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithMinimum<U> & JSSTTopLevel<T, U>;
+export type JSSTIntegerWithMaximumTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithMaximum<U> & JSSTTopLevel<T, U>;
+export type JSSTIntegerWithBoundsTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithBounds<U> & JSSTTopLevel<T, U>;
 export type JSSTIntegerWithNumericExclusiveMinimumTopLevel<
-  T = JSSTEmpty
-> = t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMinimum> & JSSTTopLevel<T>;
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithNumericExclusiveMinimum<U> & JSSTTopLevel<T, U>;
 export type JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel<
-  T = JSSTEmpty
-> = t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMinimumAndMaximum> &
-  JSSTTopLevel<T>;
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithNumericExclusiveMinimumAndMaximum<U> & JSSTTopLevel<T, U>;
 export type JSSTIntegerWithNumericExclusiveMaximumTopLevel<
-  T = JSSTEmpty
-> = t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMaximum> & JSSTTopLevel<T>;
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithNumericExclusiveMaximum<U> & JSSTTopLevel<T, U>;
 export type JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel<
-  T = JSSTEmpty
-> = t.TypeOf<typeof JSSTIntegerWithNumericExclusiveMaximumAndMinimum> &
-  JSSTTopLevel<T>;
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithNumericExclusiveMaximumAndMinimum<U> & JSSTTopLevel<T, U>;
 export type JSSTIntegerWithNumericExclusiveBoundsTopLevel<
-  T = JSSTEmpty
-> = t.TypeOf<typeof JSSTIntegerWithNumericExclusiveBounds> & JSSTTopLevel<T>;
-export type JSSTIntegerEnumTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTIntegerEnum
-> &
-  JSSTTopLevel<T>;
-export type JSSTNumberTopLevel<T = JSSTEmpty> = t.TypeOf<typeof JSSTNumber> &
-  JSSTTopLevel<T>;
-export type JSSTSimpleNumberTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTSimpleNumber
-> &
-  JSSTTopLevel<T>;
-export type JSSTNumberEnumTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTNumberEnum
-> &
-  JSSTTopLevel<T>;
-export type JSSTAnyOfTopLevel<T = JSSTEmpty> = JSSTAnyOf<T> & JSSTTopLevel<T>;
-export type JSSTAllOfTopLevel<T = JSSTEmpty> = JSSTAllOf<T> & JSSTTopLevel<T>;
-export type JSSTNotTopLevel<T = JSSTEmpty> = JSSTNot<T> & JSSTTopLevel<T>;
-export type JSSTOneOfTopLevel<T = JSSTEmpty> = JSSTOneOf<T> & JSSTTopLevel<T>;
-export type JSSTStringTopLevel<T = JSSTEmpty> = t.TypeOf<typeof JSSTString> &
-  JSSTTopLevel<T>;
-export type JSSTSimpleStringTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTSimpleString
-> &
-  JSSTTopLevel<T>;
-export type JSSTRegexTopLevel<T = JSSTEmpty> = t.TypeOf<typeof JSSTRegex> &
-  JSSTTopLevel<T>;
-export type JSSTStringEnumTopLevel<T = JSSTEmpty> = t.TypeOf<
-  typeof JSSTStringEnum
-> &
-  JSSTTopLevel<T>;
-export type JSSTArrayTopLevel<T = JSSTEmpty> = JSSTArray<T> & JSSTTopLevel<T>;
-export type JSSTListTopLevel<T = JSSTEmpty> = JSSTList<T> & JSSTTopLevel<T>;
-export type JSSTTupleTopLevel<T = JSSTEmpty> = JSSTTuple<T> & JSSTTopLevel<T>;
-export type JSSTObjectTopLevel<T = JSSTEmpty> = JSSTObject<T> & JSSTTopLevel<T>;
-export type JSSTGenericTopLevel<T = JSSTEmpty> = T & JSSTTopLevel<T>;
-export type JSONSchemaObject<T> =
-  | JSSTEmptyTopLevel<T>
-  | JSSTConstTopLevel<T>
-  | JSSTReferenceTopLevel<T>
-  | JSSTNullTopLevel<T>
-  | JSSTBooleanTopLevel<T>
-  | JSSTIntegerTopLevel<T>
-  | JSSTSimpleIntegerTopLevel<T>
-  | JSSTIntegerWithMinimumTopLevel<T>
-  | JSSTIntegerWithMaximumTopLevel<T>
-  | JSSTIntegerWithBoundsTopLevel<T>
-  | JSSTIntegerWithNumericExclusiveMinimumTopLevel<T>
-  | JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel<T>
-  | JSSTIntegerWithNumericExclusiveMaximumTopLevel<T>
-  | JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel<T>
-  | JSSTIntegerWithNumericExclusiveBoundsTopLevel<T>
-  | JSSTIntegerEnumTopLevel<T>
-  | JSSTNumberTopLevel<T>
-  | JSSTSimpleNumberTopLevel<T>
-  | JSSTNumberEnumTopLevel<T>
-  | JSSTAnyOfTopLevel<T>
-  | JSSTAllOfTopLevel<T>
-  | JSSTNotTopLevel<T>
-  | JSSTOneOfTopLevel<T>
-  | JSSTStringTopLevel<T>
-  | JSSTSimpleStringTopLevel<T>
-  | JSSTRegexTopLevel<T>
-  | JSSTStringEnumTopLevel<T>
-  | JSSTArrayTopLevel<T>
-  | JSSTListTopLevel<T>
-  | JSSTTupleTopLevel<T>
-  | JSSTObjectTopLevel<T>
-  | JSSTGenericTopLevel<T>;
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerWithNumericExclusiveBounds<U> & JSSTTopLevel<T, U>;
+export type JSSTIntegerEnumTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTIntegerEnum<U> & JSSTTopLevel<T, U>;
+export type JSSTNumberTopLevel<T = JSSTEmpty<any>, U = any> = JSSTNumber<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTSimpleNumberTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTSimpleNumber<U> & JSSTTopLevel<T, U>;
+export type JSSTNumberEnumTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTNumberEnum<U> & JSSTTopLevel<T, U>;
+export type JSSTAnyOfTopLevel<T = JSSTEmpty<any>, U = any> = JSSTAnyOf<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTAllOfTopLevel<T = JSSTEmpty<any>, U = any> = JSSTAllOf<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTNotTopLevel<T = JSSTEmpty<any>, U = any> = JSSTNot<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTOneOfTopLevel<T = JSSTEmpty<any>, U = any> = JSSTOneOf<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTStringTopLevel<T = JSSTEmpty<any>, U = any> = JSSTString<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTSimpleStringTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTSimpleString<U> & JSSTTopLevel<T, U>;
+export type JSSTRegexTopLevel<T = JSSTEmpty<any>, U = any> = JSSTRegex<U> &
+  JSSTTopLevel<T, U>;
+export type JSSTStringEnumTopLevel<
+  T = JSSTEmpty<any>,
+  U = any
+> = JSSTStringEnum<U> & JSSTTopLevel<T, U>;
+export type JSSTArrayTopLevel<T = JSSTEmpty<any>, U = any> = JSSTArray<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTListTopLevel<T = JSSTEmpty<any>, U = any> = JSSTList<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTTupleTopLevel<T = JSSTEmpty<any>, U = any> = JSSTTuple<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTObjectTopLevel<T = JSSTEmpty<any>, U = any> = JSSTObject<T, U> &
+  JSSTTopLevel<T, U>;
+export type JSSTGenericTopLevel<T = JSSTEmpty<any>, U = any> = T &
+  JSSTTopLevel<T, U>;
+export type JSONSchemaObject<T, U> =
+  | JSSTEmptyTopLevel<T, U>
+  | JSSTConstTopLevel<T, U>
+  | JSSTReferenceTopLevel<T, U>
+  | JSSTNullTopLevel<T, U>
+  | JSSTBooleanTopLevel<T, U>
+  | JSSTIntegerTopLevel<T, U>
+  | JSSTSimpleIntegerTopLevel<T, U>
+  | JSSTIntegerWithMinimumTopLevel<T, U>
+  | JSSTIntegerWithMaximumTopLevel<T, U>
+  | JSSTIntegerWithBoundsTopLevel<T, U>
+  | JSSTIntegerWithNumericExclusiveMinimumTopLevel<T, U>
+  | JSSTIntegerWithNumericExclusiveMinimumAndMaximumTopLevel<T, U>
+  | JSSTIntegerWithNumericExclusiveMaximumTopLevel<T, U>
+  | JSSTIntegerWithNumericExclusiveMaximumAndMinimumTopLevel<T, U>
+  | JSSTIntegerWithNumericExclusiveBoundsTopLevel<T, U>
+  | JSSTIntegerEnumTopLevel<T, U>
+  | JSSTNumberTopLevel<T, U>
+  | JSSTSimpleNumberTopLevel<T, U>
+  | JSSTNumberEnumTopLevel<T, U>
+  | JSSTAnyOfTopLevel<T, U>
+  | JSSTAllOfTopLevel<T, U>
+  | JSSTNotTopLevel<T, U>
+  | JSSTOneOfTopLevel<T, U>
+  | JSSTStringTopLevel<T, U>
+  | JSSTSimpleStringTopLevel<T, U>
+  | JSSTRegexTopLevel<T, U>
+  | JSSTStringEnumTopLevel<T, U>
+  | JSSTArrayTopLevel<T, U>
+  | JSSTListTopLevel<T, U>
+  | JSSTTupleTopLevel<T, U>
+  | JSSTObjectTopLevel<T, U>
+  | JSSTGenericTopLevel<T, U>;
