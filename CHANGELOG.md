@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.13`
+
+* Bugfix and type cleanups.
+
 ## `v0.0.12`
 
 * Allows generic extension of all types.
