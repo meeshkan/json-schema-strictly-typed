@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## `v0.0.14`
+
+* Bugfix for empty type.
+
 ## `v0.0.13`
 
 * Bugfix and type cleanups.

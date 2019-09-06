@@ -45,7 +45,7 @@ import {
 } from "../src/";
 
 test("JSSTEmpty", () => {
-  const _: JSSTEmpty<{}> = {  };
+  const _: JSSTEmpty<{}> = {};
   expect(JSSTEmpty(t.type({})).is(_)).toBe(true);
   expect(JSSTEmpty_.is(_)).toBe(true);
 });

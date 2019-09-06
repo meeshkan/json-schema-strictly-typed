@@ -4,22 +4,19 @@ const _J = <U extends object>(
   u: t.Type<U, U>
 ): input is JSSTEmpty<U> =>
   typeof input === "object" &&
-  !Object.getPrototypeOf(input) &&
   Object.getOwnPropertyNames(<object>input).length === 0 &&
+  (<object>input).constructor === {}.constructor &&
   u.is(input);
 export const JSSTEmpty = <U extends object>(
   u: t.Type<U, U>
 ): t.Type<JSSTEmpty<U>, JSSTEmpty<U>> =>
-  //t.intersection([
-    new t.Type<JSSTEmpty<U>, JSSTEmpty<U>, unknown>(
-      "JSSTEmpty",
-      (input: unknown): input is JSSTEmpty<U> => _J(input, u),
-      (input, context) =>
-        _J(input, u) ? t.success(input) : t.failure(input, context),
-      t.identity
-    )//,
-    //u
-  //]);
+  new t.Type<JSSTEmpty<U>, JSSTEmpty<U>, unknown>(
+    "JSSTEmpty",
+    (input: unknown): input is JSSTEmpty<U> => _J(input, u),
+    (input, context) =>
+      _J(input, u) ? t.success(input) : t.failure(input, context),
+    t.identity
+  );
 export const JSSTEmpty_ = JSSTEmpty(t.type({}));
 
 export const JSSTList = <T, U extends object>(
