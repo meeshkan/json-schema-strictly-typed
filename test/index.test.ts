@@ -120,19 +120,19 @@ test("JSSTString with enum", () => {
 });
 
 test("JSSTArray as list", () => {
-  const _: JSSTList<{},{}> = { type: "array", items: { type: "string" } };
-  const __: JSSTArray<{},{}> = _;
+  const _: JSSTList<{}, {}> = { type: "array", items: { type: "string" } };
+  const __: JSSTArray<{}, {}> = _;
   expect(JSSTArray_.is(_)).toBe(true);
 });
 
 test("JSSTArray as tuple", () => {
-  const _: JSSTTuple<{},{}> = { type: "array", items: [{ type: "string" }] };
-  const __: JSSTArray<{},{}> = _;
+  const _: JSSTTuple<{}, {}> = { type: "array", items: [{ type: "string" }] };
+  const __: JSSTArray<{}, {}> = _;
   expect(JSSTArray_.is(_)).toBe(true);
 });
 
 test("JSSTObject", () => {
-  const _: JSSTObject<{},{}> = {
+  const _: JSSTObject<{}, {}> = {
     type: "object",
     properties: { foo: { type: "string" } }
   };
@@ -172,34 +172,34 @@ test("JSSTTopLevel with custom property", () => {
 });
 
 test("JSSTOneOf", () => {
-  const _: JSSTOneOf<{},{}> = {
+  const _: JSSTOneOf<{}, {}> = {
     oneOf: [{ type: "object", properties: { foo: { type: "string" } } }]
   };
   expect(JSSTOneOf_.is(_)).toBe(true);
 });
 
 test("JSSTAnyOf", () => {
-  const _: JSSTAnyOf<{},{}> = {
+  const _: JSSTAnyOf<{}, {}> = {
     anyOf: [{ type: "object", properties: { foo: { type: "string" } } }]
   };
   expect(JSSTAnyOf_.is(_)).toBe(true);
 });
 
 test("JSSTAllOf", () => {
-  const _: JSSTAllOf<{},{}> = {
+  const _: JSSTAllOf<{}, {}> = {
     allOf: [{ type: "object", properties: { foo: { type: "string" } } }]
   };
   expect(JSSTAllOf_.is(_)).toBe(true);
 });
 
 test("JSSTNot", () => {
-  const _: JSSTNot<{},{}> = {
+  const _: JSSTNot<{}, {}> = {
     not: { type: "object", properties: { foo: { type: "string" } } }
   };
   expect(JSSTNot_.is(_)).toBe(true);
 });
 
 test("JSSTReference with top level works", () => {
-  const _: JSSTReferenceTopLevel<{},{}> = { $ref: "foo", definitions: {} };
+  const _: JSSTReferenceTopLevel<{}, {}> = { $ref: "foo", definitions: {} };
   expect(JSSTReferenceTopLevel_.is(_)).toBe(true);
 });
