@@ -10,16 +10,16 @@ const _J = <U extends object>(
 export const JSSTEmpty = <U extends object>(
   u: t.Type<U, U>
 ): t.Type<JSSTEmpty<U>, JSSTEmpty<U>> =>
-  t.intersection([
+  //t.intersection([
     new t.Type<JSSTEmpty<U>, JSSTEmpty<U>, unknown>(
       "JSSTEmpty",
       (input: unknown): input is JSSTEmpty<U> => _J(input, u),
       (input, context) =>
         _J(input, u) ? t.success(input) : t.failure(input, context),
       t.identity
-    ),
-    u
-  ]);
+    )//,
+    //u
+  //]);
 export const JSSTEmpty_ = JSSTEmpty(t.type({}));
 
 export const JSSTList = <T, U extends object>(

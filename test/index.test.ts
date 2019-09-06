@@ -39,8 +39,16 @@ import {
   JSSTReference_,
   JSSTConst_,
   JSSTNull_,
-  JSSTBoolean_
+  JSSTBoolean_,
+  JSSTEmpty,
+  JSSTEmpty_
 } from "../src/";
+
+test("JSSTEmpty", () => {
+  const _: JSSTEmpty<{}> = {  };
+  expect(JSSTEmpty(t.type({})).is(_)).toBe(true);
+  expect(JSSTEmpty_.is(_)).toBe(true);
+});
 
 test("JSSTConst", () => {
   const _: JSSTConst<{}> = { const: "foo" };
