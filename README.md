@@ -62,3 +62,5 @@ There is plenty of stuff that is not implemented yet.  I'd really appreciate you
 * finish implementing the JSON Schema 7 Specification
 * add various schema extensions
 * use XOR combinator instead of `|` for types to avoid nonsense unoins
+
+Please note that this project is governed by the [Unmock Community Code of Conduct](https://github.com/unmock/code-of-conduct). By participating in this project, you agree to abide by its terms.
