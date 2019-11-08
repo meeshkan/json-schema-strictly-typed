@@ -62,5 +62,3 @@ detaling how to contribute. Meanwhile, there is plenty of feature that haven't b
 
 
 Please note that this project is governed by the [Unmock Community Code of Conduct](https://github.com/unmock/code-of-conduct). By participating in this project, you agree to abide by its terms.
-
-Please note that this project is governed by the [Unmock Community Code of Conduct](https://github.com/unmock/code-of-conduct). By participating in this project, you agree to abide by its terms.
