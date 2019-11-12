@@ -55,12 +55,10 @@ Here are all of the types in the API.  Some of them also have sub-types for usef
 
 Additionally, top-level versions of all of these are available by adding `TopLevel` to the definition. Top-level JSON Schema objects contain optional fields like `$id`, `$schema` and `definitions`.
 
-## Todo
+## Contributing
 
-There is plenty of stuff that is not implemented yet.  I'd really appreciate your help!
+Thanks for wanting to contribute! We will soon have a contributing page
+detaling how to contribute. Meanwhile, there are plenty of features that haven't been implemented yet. Please check out our [open issues](https://github.com/unmock/json-schema-strictly-typed/issues). We'd really appreciate your help!
 
-* finish implementing the JSON Schema 7 Specification
-* add various schema extensions
-* use XOR combinator instead of `|` for types to avoid nonsense unoins
 
 Please note that this project is governed by the [Unmock Community Code of Conduct](https://github.com/unmock/code-of-conduct). By participating in this project, you agree to abide by its terms.
